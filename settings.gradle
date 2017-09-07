@@ -1,1 +1,1 @@
-include ':app', ':finotes-orm'
+include ':demo', ':onam'
