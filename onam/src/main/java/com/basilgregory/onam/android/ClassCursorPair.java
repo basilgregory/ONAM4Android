@@ -1,4 +1,4 @@
-package com.basilgregory.onam.constants;
+package com.basilgregory.onam.android;
 
 import android.database.Cursor;
 
@@ -10,19 +10,19 @@ public class ClassCursorPair {
     private Class aClass;
     private Cursor cursor;
 
-    public Class getaClass() {
+    Class getaClass() {
         return aClass;
     }
 
-    public void setaClass(Class aClass) {
+    void setaClass(Class aClass) {
         this.aClass = aClass;
     }
 
-    public Cursor getCursor() {
+    Cursor getCursor() {
         return cursor;
     }
 
-    public void setCursor(Cursor cursor) {
+    void setCursor(Cursor cursor) {
         this.cursor = cursor;
     }
 }

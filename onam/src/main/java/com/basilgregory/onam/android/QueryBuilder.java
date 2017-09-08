@@ -1,13 +1,12 @@
-package com.basilgregory.onam.builder;
+package com.basilgregory.onam.android;
 
 import android.content.ContentValues;
 
 import com.basilgregory.onam.annotations.Table;
-import com.basilgregory.onam.constants.DB;
 
 import java.lang.reflect.Field;
 
-import static com.basilgregory.onam.builder.DbUtil.invokeGetter;
+import static com.basilgregory.onam.android.DbUtil.invokeGetter;
 
 /**
  * Created by donpeter on 8/29/17.

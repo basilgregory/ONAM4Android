@@ -1,11 +1,10 @@
-package com.basilgregory.onam.builder;
+package com.basilgregory.onam.android;
 
 import com.basilgregory.onam.annotations.Column;
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.OneToMany;
 import com.basilgregory.onam.annotations.OneToOne;
 import com.basilgregory.onam.annotations.Table;
-import com.basilgregory.onam.constants.DB;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

@@ -1,6 +1,6 @@
 package com.basilgregory.onam.annotations;
 
-import com.basilgregory.onam.builder.FetchType;
+import com.basilgregory.onam.android.FetchType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

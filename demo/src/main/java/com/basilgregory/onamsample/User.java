@@ -4,7 +4,7 @@ import com.basilgregory.onam.annotations.JoinTable;
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.OneToMany;
 import com.basilgregory.onam.annotations.Table;
-import com.basilgregory.onam.builder.Entity;
+import com.basilgregory.onam.android.Entity;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class User extends Entity {
 
     @OneToMany(referencedColumnName = "owner_id")
     public List<Post> getPosts() {
-        return (List<Post>) fetch(this.posts,new Post(){});
+        return fetch(this.posts,new Post(){});
     }
 
     public void setPosts(List<Post> posts) {
@@ -48,7 +48,7 @@ public class User extends Entity {
 
     @OneToMany(referencedColumnName = "creator_id")
     public List<Comment> getComments() {
-        return (List<Comment>) fetch(this.comments,new Comment(){});
+        return fetch(this.comments,new Comment(){});
     }
 
     public void setComments(List<Comment> comments) {
@@ -58,7 +58,7 @@ public class User extends Entity {
     @ManyToMany
     @JoinTable(tableName = "user_followers", targetEntity = Post.class)
     public List<Post> getFollowedPosts() {
-        return (List<Post>) fetch(this.followedPosts,new Post(){});
+        return fetch(this.followedPosts,new Post(){});
     }
 
     public void setFollowedPosts(List<Post> followedPosts) {

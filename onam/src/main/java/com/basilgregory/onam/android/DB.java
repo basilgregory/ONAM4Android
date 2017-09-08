@@ -1,8 +1,6 @@
-package com.basilgregory.onam.constants;
+package com.basilgregory.onam.android;
 
 import android.util.Base64;
-
-import com.basilgregory.onam.builder.DbMetaData;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,7 +13,7 @@ import java.io.Serializable;
  */
 
 public class DB {
-    public static String PRIMARY_KEY_ID = "_id";
+    static String PRIMARY_KEY_ID = "_id";
 
     static String toString(Serializable serializable) throws Exception{
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

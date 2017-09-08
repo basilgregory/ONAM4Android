@@ -1,4 +1,4 @@
-package com.basilgregory.onam.builder;
+package com.basilgregory.onam.android;
 
 /**
  * Created by donpeter on 8/28/17.
@@ -88,11 +88,11 @@ public abstract class Entity implements Serializable{
                 : relatedEntity);
         return  entity;
     }
-    protected Object fetch(Object relatedEntityList, Object holderClass) {
-        return returnValueAsItIs ? relatedEntityList :
-                ((this.refresh || relatedEntityList == null || ((List<Entity>)relatedEntityList).size() < 1)
+    protected <E extends Entity> List<E> fetch(Object relatedEntityList, Object holderClass) {
+        return (List<E>) (returnValueAsItIs ? relatedEntityList :
+                ((this.refresh || relatedEntityList == null || ((List)relatedEntityList).size() < 1)
                         ? DBExecutor.getInstance().findRelatedEntities(this, holderClass)
-                        : relatedEntityList);
+                        : relatedEntityList));
     }
 
     /**

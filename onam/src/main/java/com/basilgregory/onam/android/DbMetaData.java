@@ -1,4 +1,4 @@
-package com.basilgregory.onam.builder;
+package com.basilgregory.onam.android;
 
 import java.io.Serializable;
 import java.util.ArrayList;

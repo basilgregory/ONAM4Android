@@ -1,11 +1,10 @@
-package com.basilgregory.onam.builder;
+package com.basilgregory.onam.android;
 
 import android.database.Cursor;
 
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.OneToMany;
 import com.basilgregory.onam.annotations.Table;
-import com.basilgregory.onam.constants.ClassCursorPair;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

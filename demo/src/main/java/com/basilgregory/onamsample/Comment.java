@@ -3,7 +3,7 @@ package com.basilgregory.onamsample;
 import com.basilgregory.onam.annotations.Column;
 import com.basilgregory.onam.annotations.ManyToOne;
 import com.basilgregory.onam.annotations.Table;
-import com.basilgregory.onam.builder.Entity;
+import com.basilgregory.onam.android.Entity;
 
 /**
  * Created by donpeter on 9/6/17.

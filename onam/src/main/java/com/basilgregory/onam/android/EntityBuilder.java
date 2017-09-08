@@ -1,19 +1,18 @@
-package com.basilgregory.onam.builder;
+package com.basilgregory.onam.android;
 
 import android.database.Cursor;
 
 import com.basilgregory.onam.annotations.Table;
-import com.basilgregory.onam.constants.DB;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.basilgregory.onam.builder.DbUtil.getColumnName;
-import static com.basilgregory.onam.builder.DbUtil.getMappingForeignColumnNameClass;
-import static com.basilgregory.onam.builder.DbUtil.getMethod;
-import static com.basilgregory.onam.builder.Entity.findById;
+import static com.basilgregory.onam.android.DbUtil.getColumnName;
+import static com.basilgregory.onam.android.DbUtil.getMappingForeignColumnNameClass;
+import static com.basilgregory.onam.android.DbUtil.getMethod;
+import static com.basilgregory.onam.android.Entity.findById;
 
 /**
  * Created by donpeter on 8/30/17.

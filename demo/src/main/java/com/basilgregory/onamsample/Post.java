@@ -6,7 +6,7 @@ import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.ManyToOne;
 import com.basilgregory.onam.annotations.OneToMany;
 import com.basilgregory.onam.annotations.Table;
-import com.basilgregory.onam.builder.Entity;
+import com.basilgregory.onam.android.Entity;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class Post extends Entity {
 
     @OneToMany(referencedColumnName = "post_id")
     public List<Comment> getComments() {
-        return (List<Comment>) fetch(this.comments,new Comment(){});
+        return fetch(this.comments,new Comment(){});
     }
 
     public void setComments(List<Comment> comments) {
@@ -70,7 +70,7 @@ public class Post extends Entity {
     @ManyToMany
     @JoinTable(tableName = "user_followers", targetEntity = User.class)
     public List<User> getFollowers() {
-        return (List<User>) fetch(this.followers,new User(){});
+        return fetch(this.followers,new User(){});
     }
 
     public void setFollowers(List<User> followers) {

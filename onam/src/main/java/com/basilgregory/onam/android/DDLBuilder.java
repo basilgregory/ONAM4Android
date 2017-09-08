@@ -1,16 +1,15 @@
-package com.basilgregory.onam.builder;
+package com.basilgregory.onam.android;
 
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.OneToMany;
 import com.basilgregory.onam.annotations.Table;
-import com.basilgregory.onam.constants.DB;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.basilgregory.onam.builder.DbUtil.getTableName;
+import static com.basilgregory.onam.android.DbUtil.getTableName;
 
 /**
  * Created by donpeter on 8/28/17.
