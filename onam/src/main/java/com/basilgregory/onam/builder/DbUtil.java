@@ -124,19 +124,34 @@ public class DbUtil {
         return null;
     }
 
-
     /**
-     * This method should not be called for a getter of entity, which will result in infinite loop
      *
+     * @param field
      * @param entity
-     * @return
-     * @throws Exception
+     * @return -- returns NULL if the setter method with the single parameter does not exists, else returns response from executing setter method if any
      */
-    static Object invokeGetter(Field field, Entity entity) throws Exception{
+    static Object invokeGetter(Field field, Entity entity){
         try {
             Method method = getMethod("get",field);
             if (method == null) return null;
             return method.invoke(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Setter method will be executed with a single parameter.
+     * @param entity
+     * @param setterMethod
+     * @param parameter -- parameter for setter method. Only one parameter expected.
+     * @return -- returns NULL if the setter method with the single parameter does not exists, else returns response from executing setter method if any
+     */
+    static Object invokeSetterForList(Entity entity,Method setterMethod, Object parameter) {
+        try {
+            if (setterMethod == null) return null;
+            return setterMethod.invoke(entity,parameter);
         } catch (Exception e) {
             e.printStackTrace();
         }

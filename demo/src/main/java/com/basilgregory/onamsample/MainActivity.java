@@ -16,11 +16,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Entity.init(getApplicationContext(),this);
+        Entity.init(this);
 
-        User user = User.findById(User.class,1);
-//        user.getPosts();
-//        user.getComments().get(0).getPost();
+        User user2 = new User();
+        user2.setName("Robin Alex");
+        user2.setBio("Developer");
 
 
 
@@ -29,20 +29,19 @@ public class MainActivity extends AppCompatActivity {
 //        user.setBio("Developer");
 //        user.save();
 //
-//        Post post = new Post();
-//        post.setTitle("First POST");
-//        post.setPost("this is my first ever post used");
-//        post.setCreated_at(System.currentTimeMillis());
-//        post.setUser(user);
-//        post.save();
+        Post post = new Post();
+        post.setTitle("Another POST");
+        post.setCreated_at(System.currentTimeMillis());
+        post.setUser(user2);
+        post.save();
 //
 //        //Adding a comment
-//        Comment comment = new Comment();
-//        comment.setComment("This is the first comment");
-//        comment.setCreated_at(System.currentTimeMillis());
-//        comment.setPost(post);
-//        comment.setUser(user);
-//        comment.save();
+        Comment comment = new Comment();
+        comment.setComment("Some stupid comment");
+        comment.setCreated_at(System.currentTimeMillis());
+        comment.setPost(post);
+        comment.setUser(user2);
+        comment.save();
 
 
         Log.d("TAG","somethign");

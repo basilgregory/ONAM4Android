@@ -219,13 +219,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         Integer foreignKey = findForeignKeyFromEntity((Class<Entity>) entity.getClass(), entity.getId(), foreignKeyColumn);
         if (foreignKey == null || foreignKey < 1) return null;
         Entity relatedEntity = findById((Class<Entity>) method.getReturnType(), foreignKey);
-        Method setterMethod = DbUtil.getSetterMethod(method);
-        if (setterMethod == null) return relatedEntity;
-        try {
-            setterMethod.invoke(entity, relatedEntity);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),relatedEntity);
         return relatedEntity;
     }
 
@@ -235,30 +229,24 @@ public class DBExecutor extends SQLiteOpenHelper {
         ManyToMany manyToMany = method.getAnnotation(ManyToMany.class);
         if (oneToMany != null)
             return findOneToManyRelatedEntities(entity,holderClass,oneToMany,method);
-        else if (manyToMany != null)
+        if (manyToMany != null)
             return findManyToManyRelatedEntities(entity,holderClass,method);
-        return new ArrayList<Entity>();
+        return null;
     }
 
     private List<Entity> findOneToManyRelatedEntities(Entity entity, Object holderClass
             ,OneToMany oneToMany,Method method ) {
         Class collectionType = holderClass.getClass().getSuperclass();
-        List<Entity> entities =  findByProperty(collectionType,
+        List<Entity> entities = findByProperty(collectionType,
                 oneToMany.referencedColumnName(),entity.getId(),null,null);
-        Method setterMethod = DbUtil.getSetterMethod(method);
-        if (setterMethod == null) return entities;
-        try {
-            setterMethod.invoke(entity, entities);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),entities);
         return entities;
 
     }
 
     /**
-     * Here the mapping table name has to be provided by the user.
-     * the foreignkey column names will be auto generated.
+     * Mapping table name has to be provided by the user.
+     * Foreignkey column names will be auto generated using #{getMappingForeignColumnNameClass}.
      * @param entity
      * @param holderClass
      * @param method
@@ -266,29 +254,12 @@ public class DBExecutor extends SQLiteOpenHelper {
      */
     private List<Entity> findManyToManyRelatedEntities(Entity entity, Object holderClass
             ,Method method ) {
-        List<Entity> entities = new ArrayList<>();
         JoinTable joinTable = method.getAnnotation(JoinTable.class);
-        if (joinTable == null) return new ArrayList<>();
-        Class collectionType = holderClass.getClass().getSuperclass();
+        if (joinTable == null) return null;
         Cursor cursor =  findByProperty(joinTable.tableName(),
                 getMappingForeignColumnNameClass(entity.getClass()),entity.getId(),null,null);
-        if (cursor == null || cursor.getCount() < 1) return null;
-        cursor.moveToFirst();
-        do{
-            long foreignKey = cursor.getLong
-                    (cursor.getColumnIndex(
-                            getMappingForeignColumnNameClass(collectionType)));
-            Entity queriedEntity = findById(collectionType,foreignKey);
-            if (queriedEntity == null) continue;
-            entities.add(queriedEntity);
-        }while (cursor.moveToNext());
-        Method setterMethod = DbUtil.getSetterMethod(method);
-        if (setterMethod == null) return entities;
-        try {
-            setterMethod.invoke(entity, entities);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        List<Entity> entities  = EntityBuilder.getEntityFromMappingTable(cursor,holderClass.getClass().getSuperclass());
+        DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),entities);
         return entities;
     }
 
@@ -448,12 +419,14 @@ public class DBExecutor extends SQLiteOpenHelper {
     void save(Entity entity) {
         try {
             getWritableDatabase().beginTransaction();
+            entity.setReturnValueAsItIs(true); //Makes sure that only entity related values that the user has set will be returned.
             insertOrUpdateEntity(entity);
             findAndInsertMappingObject(entity);
             getWritableDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            entity.setReturnValueAsItIs(false);
             getWritableDatabase().endTransaction();
         }
     }
@@ -478,9 +451,10 @@ public class DBExecutor extends SQLiteOpenHelper {
                 JoinTable joinTable = method.getAnnotation(JoinTable.class);
                 if (joinTable == null) continue;
                 List<Entity> getterResponse = (List<Entity>) method.invoke(masterEntity);
-                if (getterResponse == null) continue;
+                if (getterResponse == null) continue; //rest will be executed only if the mapping or list of entities returned is not null.
                 String tableName = joinTable.tableName();
                 Class targetEntity = joinTable.targetEntity();
+                removeMapping(tableName,getMappingForeignColumnNameClass(masterEntity.getClass()),masterEntity.getId());
                 for (Entity entity:getterResponse){
                     if (entity == null) continue;
                     entity = insertOrUpdateEntity(entity);
@@ -514,6 +488,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         try {
             ContentValues contentValues = QueryBuilder.insertConflictContentValues(entity,
                     findById((Class<Entity>) entity.getClass(), entity.getId()));
+            if (contentValues.size() < 1) return;
             int numberOfRowsUpdated = getWritableDatabase().update
                     (DbUtil.getTableName(entity), contentValues,
                             DB.PRIMARY_KEY_ID + " = ?", new String[]{String.valueOf(entity.getId())});
@@ -537,6 +512,11 @@ public class DBExecutor extends SQLiteOpenHelper {
         } finally {
             findAndSetByReferenceByRowId(entity, rowId); //if successfull return corresponding Entity.
         }
+    }
+
+    private int removeMapping(String tableName,String aColumn,long aValue){
+        return getWritableDatabase().delete(tableName,
+                aColumn + " = ?",new String[] { String.valueOf(aValue) });
     }
 
     private void addMapping(String tableName,String aColumnName,long aValue,String bColumnName,long bValue){

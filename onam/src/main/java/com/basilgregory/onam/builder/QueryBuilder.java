@@ -94,7 +94,12 @@ public class QueryBuilder {
                     Object newReturnValue = invokeGetter(field,entity);
                     Object currentReturnValue = invokeGetter(field,currentEntityInDB);
                     if (newReturnValue != null &&  !newReturnValue.equals(currentReturnValue)){
-                        FieldType.addValues(contentValues,field,newReturnValue);
+                        try {
+                            FieldType.addValues(contentValues,field,newReturnValue);
+                        } catch (Exception e) {
+                            Logger.InternalLogger.w("Field type is not a match with the database types (possibly a LIST)");
+                            Logger.InternalLogger.d(e.getLocalizedMessage());
+                        }
                     }
                 }
             } catch (Exception e) {

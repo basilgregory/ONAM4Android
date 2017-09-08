@@ -7,15 +7,34 @@ import com.basilgregory.onam.constants.DB;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.basilgregory.onam.builder.DbUtil.getColumnName;
+import static com.basilgregory.onam.builder.DbUtil.getMappingForeignColumnNameClass;
 import static com.basilgregory.onam.builder.DbUtil.getMethod;
+import static com.basilgregory.onam.builder.Entity.findById;
 
 /**
  * Created by donpeter on 8/30/17.
  */
 
 public class EntityBuilder {
+
+    static List<Entity> getEntityFromMappingTable(Cursor cursor, Class collectionType){
+        if (cursor == null || cursor.getCount() < 1) return null;
+        cursor.moveToFirst();
+        List<Entity> entities = new ArrayList<>();
+        do{
+            long foreignKey = cursor.getLong
+                    (cursor.getColumnIndex(
+                            getMappingForeignColumnNameClass(collectionType)));
+            Entity queriedEntity = findById(collectionType,foreignKey);
+            if (queriedEntity == null) continue;
+            entities.add(queriedEntity);
+        }while (cursor.moveToNext());
+        return entities;
+    }
 
     private static Entity convertToEntity(Class<Entity> cls,Cursor cursor,Field[] fields,Entity entity){
         for (Field field: fields) {
@@ -32,7 +51,9 @@ public class EntityBuilder {
                         firstParameterType,columnName);
                 setter.invoke(entity,valueFromDatabase);
             } catch (IllegalStateException e) {
-                Logger.InternalLogger.w("Field type is not a match with the database types (possibly a LIST)");
+                Logger.InternalLogger.w("Field ("+field.getName()
+                        +") of type ("+field.getType().getSimpleName().toUpperCase()
+                        +") is not a match with the database types (possibly a LIST)");
                 Logger.InternalLogger.d(e.getLocalizedMessage());
             }catch (Exception e) {
                 e.printStackTrace();

@@ -4,7 +4,7 @@ package com.basilgregory.onam.builder;
  * Created by donpeter on 8/28/17.
  */
 
-import android.content.Context;
+import android.app.Activity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,6 +12,8 @@ import java.util.List;
 /**
  * This class will act as the base class for all Entity POJOs.
  * You need to extent this class for all Entity classes
+ *
+ * Currently supports only ONE database.
  *
  * Sample
  * @Table(name = "events") -- this will be the name that is used to when creating the corresponding table in database.
@@ -24,6 +26,13 @@ import java.util.List;
  */
 public abstract class Entity implements Serializable{
     public Entity() {
+    }
+
+    //For internal purposes never to be used by developer.
+    private boolean returnValueAsItIs = false;
+
+    void setReturnValueAsItIs(boolean returnValueAsItIs) {
+        this.returnValueAsItIs = returnValueAsItIs;
     }
 
     private long id;
@@ -80,9 +89,10 @@ public abstract class Entity implements Serializable{
         return  entity;
     }
     protected Object fetch(Object relatedEntityList, Object holderClass) {
-        return ((this.refresh || relatedEntityList == null || ((List<Entity>)relatedEntityList).size() < 1)
-                ? DBExecutor.getInstance().findRelatedEntities(this, holderClass)
-                : relatedEntityList);
+        return returnValueAsItIs ? relatedEntityList :
+                ((this.refresh || relatedEntityList == null || ((List<Entity>)relatedEntityList).size() < 1)
+                        ? DBExecutor.getInstance().findRelatedEntities(this, holderClass)
+                        : relatedEntityList);
     }
 
     /**
@@ -99,11 +109,10 @@ public abstract class Entity implements Serializable{
      * Sample #{init} call
      * Entity.init(getApplicationContext(),Activity.this);
      *
-     * @param context - Context of your application (getApplicationContext())
      * @param activityObject - Current class object or preferably Acitivty object (ex. Activity.this).
      */
-    public static void init(Context context, Object activityObject){
-        DBExecutor.init(context,activityObject);
+    public static void init(Activity activityObject){
+        DBExecutor.init(activityObject.getApplicationContext(),activityObject);
 
     }
 
