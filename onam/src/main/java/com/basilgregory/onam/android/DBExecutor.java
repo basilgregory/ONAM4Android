@@ -132,18 +132,13 @@ public class DBExecutor extends SQLiteOpenHelper {
             executeTableUpdate(DMLBuilder.renameTables(dbAnnotation.tables()));
 
 
-            List<ClassCursorPair> classCursorPairs = new ArrayList<ClassCursorPair>(dbAnnotation.tables().length);
+            HashMap<Class,List<String>> tableCursors = new HashMap<>(dbAnnotation.tables().length);
             for(Class cls:dbAnnotation.tables()) {
                 if (cls == null || cls.getAnnotation(Table.class) == null) continue;
-                ClassCursorPair classCursorPair = new ClassCursorPair();
-                classCursorPair.setaClass(cls);
-                classCursorPair.setCursor(getTableInfo(DbUtil.getTableName(cls)));
-                classCursorPairs.add(classCursorPair);
+                tableCursors.put(cls,getNameColumnFromCursor(getTableInfo(DbUtil.getTableName(cls))));
             }
 
-            executeTableUpdate(DMLBuilder.addColumns(classCursorPairs));
-
-
+            executeTableUpdate(DMLBuilder.addColumns(tableCursors));
 
             setCurrentVersion(context,dbAnnotation);
         } catch (Exception e) {
@@ -542,10 +537,22 @@ public class DBExecutor extends SQLiteOpenHelper {
 
     }
 
-
-
-    Cursor getTableInfo(String tableName){
+    private Cursor getTableInfo(String tableName){
         return getReadableDatabase().rawQuery("PRAGMA table_info(" + tableName + ")", null);
+    }
+
+    private List<String> getNameColumnFromCursor(Cursor cursor){
+        List<String> columnNames = new ArrayList<>();
+        if (cursor == null || cursor.getCount() < 1) return columnNames;
+        cursor.moveToFirst();
+        do {
+            try {
+                columnNames.add(cursor.getString(cursor.getColumnIndex("name")));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }while (cursor.moveToNext());
+        return columnNames;
     }
 
     boolean tableExists(String tableName){

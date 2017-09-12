@@ -1,7 +1,5 @@
 package com.basilgregory.onam.android;
 
-import android.database.Cursor;
-
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.OneToMany;
 import com.basilgregory.onam.annotations.Table;
@@ -60,13 +58,13 @@ public class DMLBuilder {
 
     }
 
-    static HashMap<String,String> addColumns(List<ClassCursorPair> classCursorPairs){
-        HashMap<String,String> dmls = new HashMap<String,String>(classCursorPairs.size());
-        for(ClassCursorPair classCursorPair:classCursorPairs) {
-            Class cls = classCursorPair.getaClass();
+    static HashMap<String,String> addColumns(HashMap<Class,List<String>> classColumnNamePairs){
+        HashMap<String,String> dmls = new HashMap<String,String>(classColumnNamePairs.size());
+        for(Class cls : classColumnNamePairs.keySet()) {
             if (cls == null || cls.getAnnotation(Table.class) == null) continue;
             String tableName = DbUtil.getTableName(cls);
-            for (String addColumnDml: addColumns(classCursorPair.getCursor(),cls)) {
+            List<String> addColumnDmls = addColumns(classColumnNamePairs.get(cls),cls);
+            for (String addColumnDml: addColumnDmls) {
                 dmls.put(tableName,addColumnDml);
             }
         }
@@ -78,24 +76,22 @@ public class DMLBuilder {
                 .append(";").toString();
     }
 
-    private static List<String> addColumns(Cursor existingTable, Class newTableClass){
+    private static List<String> addColumns(List<String> existingTableColumns, Class newTableClass){
         List<String> addColumnsDml = new ArrayList<String>();
-        if (existingTable == null || newTableClass == null) return addColumnsDml;
+        if (existingTableColumns == null || newTableClass == null) return addColumnsDml;
         for (Field field:newTableClass.getDeclaredFields()) {
             boolean fieldAlreadyInDb = false;
-            existingTable.moveToFirst();
-            do{
+            for (String existingtableColumn :existingTableColumns){
                 try {
                     String expectedColumnNameForField = DbUtil.getColumnName(field);
                     if (expectedColumnNameForField == null) continue;
-                    if (!expectedColumnNameForField.toLowerCase().equals(
-                            existingTable.getString(existingTable.getColumnIndex("name")).toLowerCase())) continue;
+                    if (!expectedColumnNameForField.toLowerCase().equals(existingtableColumn.toLowerCase())) continue;
                     fieldAlreadyInDb = true;
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }while (existingTable.moveToNext());
+            }
             if (fieldAlreadyInDb) continue;
             StringBuffer addColumnDml = new StringBuffer("ALTER TABLE ")
                     .append(DbUtil.getTableName(newTableClass)).append(" ADD COLUMN ");
