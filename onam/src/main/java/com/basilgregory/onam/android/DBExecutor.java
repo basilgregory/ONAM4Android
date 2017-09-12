@@ -104,6 +104,7 @@ public class DBExecutor extends SQLiteOpenHelper {
                 if (tableExists(DbUtil.getTableName(table))) continue;
                 curatedTablesList.add(table);
             }
+            //Creation of fresh tables directly from entities.
             executeNewTableCreation(DDLBuilder.createTables(curatedTablesList));
 
 
@@ -124,11 +125,14 @@ public class DBExecutor extends SQLiteOpenHelper {
                     mappingTableCreateDDL.put(mappingTableName,ddl);
                 }
             }
+            //Creation of mapping tables from #{ManyToMany} annotation getters.
             executeNewTableCreation(mappingTableCreateDDL);
 
-
+            //Droping entities that are no more found in #{DB} annotation.
             executeTableDrop(DMLBuilder.curateAndDropTables
                     (storage.getCurrentDbMeta(dbName).tableNames,dbAnnotation.tables(),mappingTables));
+
+            //executing table renaming from entities.
             executeTableUpdate(DMLBuilder.renameTables(dbAnnotation.tables()));
 
 
@@ -137,7 +141,6 @@ public class DBExecutor extends SQLiteOpenHelper {
                 if (cls == null || cls.getAnnotation(Table.class) == null) continue;
                 tableCursors.put(cls,getNameColumnFromCursor(getTableInfo(DbUtil.getTableName(cls))));
             }
-
             executeTableUpdate(DMLBuilder.addColumns(tableCursors));
 
             setCurrentVersion(context,dbAnnotation);
