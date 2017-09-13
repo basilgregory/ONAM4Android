@@ -9,12 +9,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.basilgregory.onamsample.MainActivity">
+        <activity android:name=".AllPostsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".AddPostActivity">
+        </activity>
+        <activity android:name=".PostDetailsActivity">
+        </activity>
+        <activity android:name=".AddCommentActivity">
         </activity>
     </application>
 

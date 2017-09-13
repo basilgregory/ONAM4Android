@@ -1,4 +1,4 @@
-package com.basilgregory.onamsample;
+package com.basilgregory.onamsample.entities;
 
 import com.basilgregory.onam.annotations.JoinTable;
 import com.basilgregory.onam.annotations.ManyToMany;

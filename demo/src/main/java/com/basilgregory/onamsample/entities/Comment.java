@@ -1,4 +1,4 @@
-package com.basilgregory.onamsample;
+package com.basilgregory.onamsample.entities;
 
 import com.basilgregory.onam.annotations.Column;
 import com.basilgregory.onam.annotations.ManyToOne;

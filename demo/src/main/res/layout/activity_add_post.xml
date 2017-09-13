@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <EditText
+        android:id="@+id/postTitle"
+        android:layout_margin="10dp"
+        android:lines="1"
+        android:maxLines="1"
+        android:hint="Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/postDescription"
+        android:layout_margin="10dp"
+        android:lines="3"
+        android:gravity="top"
+        android:hint="Your Post"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/savePost"
+        android:background="@color/colorPrimaryDark"
+        android:layout_width="match_parent"
+        android:textColor="@android:color/white"
+        android:text="Save Post"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
