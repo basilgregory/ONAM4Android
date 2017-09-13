@@ -40,6 +40,17 @@ public class QueryBuilder {
                 .replaceFirst(":id",String.valueOf(rowID));
     }
 
+    static String findAll(Class<Entity> cls,String whereClause,Integer startIndex,Integer pageSize){
+        return selectQuery(DbUtil.getTableName(cls),whereClause,null,null,startIndex,pageSize);
+    }
+
+    static String findAll(Class<Entity> cls,String whereClause,String orderByColumn,boolean descending,Integer startIndex,Integer pageSize){
+        StringBuffer orderByCondition = new StringBuffer(orderByColumn)
+                .append(" ").append(descending ? "DESC" : "ASC");
+        return selectQuery(DbUtil.getTableName(cls),whereClause,null,orderByCondition.toString(),startIndex,pageSize);
+    }
+
+
     static String findColumnById(Class<Entity> cls,long id,String columnName){
         String rawQuery =  "SELECT :columnName FROM :table WHERE "+DB.PRIMARY_KEY_ID+" = :id Limit 1";
         return rawQuery

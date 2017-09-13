@@ -135,9 +135,12 @@ public abstract class Entity implements Serializable{
         DBExecutor.getInstance().save(this);
     }
 
+    /**
+     * Will delete the current entity on which the function is called.
+     * @return true if the row was deleted.
+     */
     public boolean delete(){
-        DBExecutor.getInstance().delete(this);
-        return false;
+        return DBExecutor.getInstance().delete(this) == 1;
     }
 
     /**
@@ -156,7 +159,7 @@ public abstract class Entity implements Serializable{
      *           See #{getId} for more details on how to get id value.
      * @return Entity - You need to cast this to the appropriate entity subclass.
      */
-    public static <E extends Entity> E findById(Class entityClass,long id){
+    public static <E extends Entity> E find(Class entityClass,long id){
         return (E) DBExecutor.getInstance().findById(entityClass,id);
 
     }
@@ -180,9 +183,24 @@ public abstract class Entity implements Serializable{
      * @param pageSize - null hack
      * @return
      */
-    public static List<?> findByProperty(Class entityClass,String columnName,Object value,Integer startIndex,Integer pageSize){
-        return (List<?>)DBExecutor.getInstance().findByProperty(entityClass,columnName,value,startIndex,pageSize);
+    public static <E extends Entity> List<E> findByProperty(Class entityClass,String columnName,Object value,Integer startIndex,Integer pageSize){
+        return (List<E>)DBExecutor.getInstance().findByProperty(entityClass,columnName,value,startIndex,pageSize);
+    }
 
+    public static <E extends Entity> List<E> findAll(Class entityClass, Integer startIndex,Integer pageSize){
+        return (List<E>) DBExecutor.getInstance().findAll(entityClass,null,startIndex,pageSize);
+    }
+
+    public static <E extends Entity> List<E> findAll(Class entityClass,String whereClause,Integer startIndex,Integer pageSize){
+        return (List<E>) DBExecutor.getInstance().findAll(entityClass,whereClause,startIndex,pageSize);
+    }
+
+    public static <E extends Entity> List<E> findAll(Class entityClass,String orderByColumn,boolean descending,Integer startIndex,Integer pageSize){
+        return (List<E>) DBExecutor.getInstance().findAllWithOrderBy(entityClass,null,orderByColumn,descending,startIndex,pageSize);
+    }
+
+    public static <E extends Entity> List<E> findAll(Class entityClass,String whereClause, String orderByColumn,boolean descending,Integer startIndex,Integer pageSize){
+        return (List<E>) DBExecutor.getInstance().findAllWithOrderBy(entityClass,whereClause,orderByColumn,descending,startIndex,pageSize);
     }
 
 }

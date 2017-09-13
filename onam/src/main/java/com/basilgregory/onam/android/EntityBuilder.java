@@ -12,7 +12,7 @@ import java.util.List;
 import static com.basilgregory.onam.android.DbUtil.getColumnName;
 import static com.basilgregory.onam.android.DbUtil.getMappingForeignColumnNameClass;
 import static com.basilgregory.onam.android.DbUtil.getMethod;
-import static com.basilgregory.onam.android.Entity.findById;
+import static com.basilgregory.onam.android.Entity.find;
 
 /**
  * Created by donpeter on 8/30/17.
@@ -28,7 +28,7 @@ public class EntityBuilder {
             long foreignKey = cursor.getLong
                     (cursor.getColumnIndex(
                             getMappingForeignColumnNameClass(collectionType)));
-            Entity queriedEntity = findById(collectionType,foreignKey);
+            Entity queriedEntity = find(collectionType,foreignKey);
             if (queriedEntity == null) continue;
             entities.add(queriedEntity);
         }while (cursor.moveToNext());

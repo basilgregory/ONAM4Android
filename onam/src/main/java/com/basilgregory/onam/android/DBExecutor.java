@@ -20,7 +20,6 @@ import java.util.List;
 
 import static com.basilgregory.onam.android.DbUtil.getColumnName;
 import static com.basilgregory.onam.android.DbUtil.getMappingForeignColumnNameClass;
-import static com.basilgregory.onam.android.EntityBuilder.convertToEntity;
 
 
 /**
@@ -278,7 +277,7 @@ public class DBExecutor extends SQLiteOpenHelper {
     Entity findById(Class<Entity> cls, long id) {
         Entity entity = null;
         try {
-            entity = convertToEntity(cls, getReadableDatabase().rawQuery
+            entity = EntityBuilder.convertToEntity(cls, getReadableDatabase().rawQuery
                     (QueryBuilder.findById(cls, id), null));
             fetchAndSetFirstDegreeRelatedObject(entity);
         } catch (Exception e) {
@@ -330,7 +329,7 @@ public class DBExecutor extends SQLiteOpenHelper {
      */
     private void findAndSetUsingReferenceById(Entity entity, long id) {
         try {
-            convertToEntity(entity, getReadableDatabase().rawQuery
+            EntityBuilder.convertToEntity(entity, getReadableDatabase().rawQuery
                     (QueryBuilder.findById((Class<Entity>) entity.getClass(), id), null));
         } catch (Exception e) {
             e.printStackTrace();
@@ -339,7 +338,7 @@ public class DBExecutor extends SQLiteOpenHelper {
 
     private void findAndSetByReferenceByRowId(Entity entity, long id) {
         try {
-            convertToEntity(entity, getReadableDatabase().rawQuery
+            EntityBuilder.convertToEntity(entity, getReadableDatabase().rawQuery
                     (QueryBuilder.findByROWId((Class<Entity>) entity.getClass(), id), null));
         } catch (Exception e) {
             e.printStackTrace();
@@ -359,24 +358,36 @@ public class DBExecutor extends SQLiteOpenHelper {
     }
 
     List<Entity> findByProperty(Class<Entity> cls, String columnName, Object value, Integer startIndex, Integer pageSize) {
+        return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
+                (QueryBuilder.findByProperty(cls, columnName, value, startIndex, pageSize), null)
+                ,cls);
+    }
+
+    List<Entity> findAll(Class<Entity> cls,String whereClause, Integer startIndex, Integer pageSize) {
+        return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
+                (QueryBuilder.findAll(cls, whereClause, startIndex, pageSize), null)
+                ,cls);
+    }
+
+    List<Entity> findAllWithOrderBy(Class<Entity> cls, String whereClause, String orderByColumn,boolean descending, Integer startIndex, Integer pageSize) {
+        return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
+                (QueryBuilder.findAll(cls, whereClause,orderByColumn,descending, startIndex, pageSize), null)
+                ,cls);
+    }
+
+    private List<Entity> convertToEntityAndFetchFirstDegreeRelatedEntity(Cursor cursor,Class<Entity> entityClass){
         List<Entity> entities = new ArrayList<Entity>();
-        try {
-            Cursor cursor = getReadableDatabase().rawQuery
-                    (QueryBuilder.findByProperty(cls, columnName, value, startIndex, pageSize), null);
-            if (cursor != null && cursor.getCount() > 0 ) {
-                cursor.moveToFirst();
-                do {
-                    try {
-                        Entity entity = EntityBuilder.convertToEntity(cls,cursor,cls.getDeclaredFields());
-                        fetchAndSetFirstDegreeRelatedObject(entity);
-                        entities.add(entity);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (cursor != null && cursor.getCount() > 0 ) {
+            cursor.moveToFirst();
+            do {
+                try {
+                    Entity entity = EntityBuilder.convertToEntity(entityClass,cursor,entityClass.getDeclaredFields());
+                    fetchAndSetFirstDegreeRelatedObject(entity);
+                    entities.add(entity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }while (cursor.moveToNext());
         }
         return entities;
     }
@@ -528,14 +539,13 @@ public class DBExecutor extends SQLiteOpenHelper {
 
     boolean doesPropertyExistsForMappingTable(String tableName,
                                               String aColumnName,long aValue,String bColumnName,long bValue) throws Exception{
-        String rawQuery =  "SELECT * FROM :table WHERE :aColumn = :aValue AND :bColumn = :bValue";
-        rawQuery = rawQuery.replace(":table",tableName);
-        rawQuery = rawQuery.replace(":aColumn",aColumnName);
-        rawQuery = rawQuery.replace(":aValue",String.valueOf(aValue));
-        rawQuery = rawQuery.replace(":bColumn",bColumnName);
-        rawQuery = rawQuery.replace(":bValue",String.valueOf(bValue));
-
-        Cursor cursor = getReadableDatabase().rawQuery(rawQuery,null);
+      Cursor cursor = getReadableDatabase().rawQuery(new StringBuffer("SELECT * FROM ")
+              .append(tableName).append(" WHERE ")
+              .append(aColumnName)
+              .append(String.valueOf(aValue))
+              .append(bColumnName)
+              .append(String.valueOf(bValue))
+              .toString(),null);
         return cursor != null && cursor.getCount() > 0;
 
     }
