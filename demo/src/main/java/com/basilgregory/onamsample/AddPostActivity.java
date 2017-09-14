@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.basilgregory.onamsample.entities.Post;
+import com.basilgregory.onamsample.entities.User;
 
 public class AddPostActivity extends AppCompatActivity {
     EditText postTitle,postDescription;
@@ -32,6 +33,8 @@ public class AddPostActivity extends AppCompatActivity {
             Post post = new Post();
             post.setTitle(postTitle.getText().toString());
             post.setPost(postDescription.getText().toString());
+            User registeredUser = User.find(User.class,1);
+            post.setUser(registeredUser);
             post.save();
             finish();
         }

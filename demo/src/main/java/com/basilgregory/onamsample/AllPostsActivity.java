@@ -43,8 +43,20 @@ public class AllPostsActivity extends AppCompatActivity {
 
         //This init should be called in the activity #{onCreate} where you have #{DB} annotation added.
         Entity.init(this);
-
+        registerUser();
         connectViews();
+    }
+
+    /**
+     * Function checks for user with primary key 1 in database, and if no user is found will create a John doe.
+     * This user will be assigned to all posts and comments made from the app.
+     */
+    private void registerUser(){
+        if (User.find(User.class,1) != null) return;
+        User user = new User();
+        user.setName("John Doe");
+        user.setBio("Developer");
+        user.save();
     }
 
     @Override
@@ -93,7 +105,7 @@ public class AllPostsActivity extends AppCompatActivity {
     };
 
     private void fetchAllPosts(){
-        postList =  Entity.findAll(Post.class,null,null);
+        postList =  Post.findAll(Post.class,null,null);
     }
 
 

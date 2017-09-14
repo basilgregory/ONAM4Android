@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import com.basilgregory.onamsample.entities.Comment;
 import com.basilgregory.onamsample.entities.Post;
+import com.basilgregory.onamsample.entities.User;
 
 public class AddCommentActivity extends AppCompatActivity {
     EditText comment;
@@ -43,6 +44,8 @@ public class AddCommentActivity extends AppCompatActivity {
             commentObject.setComment(comment.getText().toString());
             commentObject.setCreated_at(System.currentTimeMillis());
             if (post != null) commentObject.setPost(post);
+            User registeredUser = User.find(User.class,1);
+            commentObject.setUser(registeredUser);
             commentObject.save();
             finish();
         }
