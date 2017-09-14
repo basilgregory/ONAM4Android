@@ -55,13 +55,21 @@ public class Comment extends Entity {
         this.user = user;
     }
 
+    /**
+     * You may create any number of @BeforeCreate functions and will be executed before actual insertion to the database
+     * The order of execution of @BeforeCreate functions (incase of more than one) will be random.
+     */
     @BeforeCreate
     public void settingTimeStamps(){
         created_at = System.currentTimeMillis();
     }
 
+    /**
+     * You may create any number of #{{@link AfterCreate}} functions and will be executed before actual insertion to the database
+     * The order of execution of #{{@link AfterCreate}} functions (incase of more than one) will be random.
+     */
     @AfterCreate
     public void afterCreate(){
-        created_at = System.currentTimeMillis() - 24*60*60*1000;
+        this.comment = "Comment: "+this.comment;
     }
 }
