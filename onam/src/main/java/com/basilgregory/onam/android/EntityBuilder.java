@@ -6,6 +6,7 @@ import com.basilgregory.onam.annotations.Table;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class EntityBuilder {
     private static Entity convertToEntity(Class<Entity> cls,Cursor cursor,Field[] fields,Entity entity){
         for (Field field: fields) {
             try {
-
+                if (Modifier.isTransient(field.getModifiers())) continue; //Transient field are already omitted from database.
                 String columnName = getColumnName(field);
                 if (columnName == null) continue; //No getter functions found. Getter is mandatory
 

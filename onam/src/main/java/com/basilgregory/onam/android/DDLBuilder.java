@@ -6,6 +6,7 @@ import com.basilgregory.onam.annotations.Table;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class DDLBuilder {
         ddlCreate.append("create table ").append(getTableName(cls)).append(" ( ").append(DB.PRIMARY_KEY_ID).append(" integer primary key autoincrement, ");
         Field[] fields = cls.getDeclaredFields();
         for (Field field:fields) {
+            if (Modifier.isTransient(field.getModifiers())) continue; //Transient field are to be omitted from creation.
             String fieldType = DbUtil.findType(field);
             if (fieldType != null) ddlCreate.append(field.getName().toLowerCase()).append(" ").append(fieldType);
             else {

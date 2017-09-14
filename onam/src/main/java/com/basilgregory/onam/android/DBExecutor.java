@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.basilgregory.onam.annotations.AfterCreate;
 import com.basilgregory.onam.annotations.AfterUpdate;
@@ -49,9 +48,9 @@ public class DBExecutor extends SQLiteOpenHelper {
     }
 
     public static void init(Context context, Object o) {
-        if (o.getClass().getAnnotation(com.basilgregory.onam.annotations.DB.class) == null)
-            return;
-        getInstance(context, o.getClass().getAnnotation(com.basilgregory.onam.annotations.DB.class).name(), o.getClass().getAnnotation(com.basilgregory.onam.annotations.DB.class).version())
+        if (o.getClass().getAnnotation(com.basilgregory.onam.annotations.DB.class) == null) return;
+        getInstance(context, o.getClass().getAnnotation(com.basilgregory.onam.annotations.DB.class).name(),
+                o.getClass().getAnnotation(com.basilgregory.onam.annotations.DB.class).version())
                 .createTables(context, o);
 
     }
@@ -67,152 +66,10 @@ public class DBExecutor extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.d(DBExecutor.class.getName(),
-                "Upgrading database from version " + oldVersion + " to "
-                        + newVersion + ", which will destroy all old data");
-        onCreate(db);
-    }
-
-    private static boolean isThisNewVersionOfDb(Context context, com.basilgregory.onam.annotations.DB dbAnnotation){
-        try {
-            Storage storage = new Storage(context);
-            return dbAnnotation.version() > storage.getCurrentDbMeta(dbAnnotation.name()).version;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private static void setCurrentVersion(Context context,com.basilgregory.onam.annotations.DB dbAnnotation){
-        try {
-            Storage storage = new Storage(context);
-            DbMetaData dbMetaData = storage.getCurrentDbMeta(dbAnnotation.name());
-            dbMetaData.version = dbAnnotation.version();
-            storage.storeCurrentDbMeta(dbAnnotation.name(),dbMetaData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    void createTables(Context context, Object o) {
-        this.storage = new Storage(context);
-        try {
-            com.basilgregory.onam.annotations.DB dbAnnotation =
-                    o.getClass().getAnnotation(com.basilgregory.onam.annotations.DB.class);
-            if (dbAnnotation == null) return;
-            if (!isThisNewVersionOfDb(context,dbAnnotation)) return;
-
-            ArrayList<Class> curatedTablesList = new ArrayList<>();//Curating list for table creation.
-            for (Class table:dbAnnotation.tables()){
-                if (tableExists(DbUtil.getTableName(table))) continue;
-                curatedTablesList.add(table);
-            }
-            //Creation of fresh tables directly from entities.
-            executeNewTableCreation(DDLBuilder.createTables(curatedTablesList));
-
-
-            //Getting the list of curated mapping tables.
-            List<String> mappingTables = new ArrayList<>();
-            HashMap<String,String> mappingTableCreateDDL = new HashMap<>();//Curating list for table creation.
-            for (Class table:dbAnnotation.tables()){
-                Method[] methods = table.getDeclaredMethods();
-                for (Method method:methods){
-                    if (method.getAnnotation(ManyToMany.class) == null) continue;
-                    JoinTable joinTableAnnotation = method.getAnnotation(JoinTable.class);
-                    if (joinTableAnnotation == null) continue;
-                    String mappingTableName = joinTableAnnotation.tableName();
-                    mappingTables.add(mappingTableName);
-                    if (tableExists(mappingTableName)) continue;
-                    Class targetEntity = joinTableAnnotation.targetEntity();
-                    String ddl = DDLBuilder.createMappingTables(mappingTableName,table,targetEntity);
-                    mappingTableCreateDDL.put(mappingTableName,ddl);
-                }
-            }
-            //Creation of mapping tables from #{ManyToMany} annotation getters.
-            executeNewTableCreation(mappingTableCreateDDL);
-
-            //Droping entities that are no more found in #{DB} annotation.
-            executeTableDrop(DMLBuilder.curateAndDropTables
-                    (storage.getCurrentDbMeta(dbName).tableNames,dbAnnotation.tables(),mappingTables));
-
-            //executing table renaming from entities.
-            executeTableUpdate(DMLBuilder.renameTables(dbAnnotation.tables()));
-
-
-            HashMap<Class,List<String>> tableCursors = new HashMap<>(dbAnnotation.tables().length);
-            for(Class cls:dbAnnotation.tables()) {
-                if (cls == null || cls.getAnnotation(Table.class) == null) continue;
-                tableCursors.put(cls,getNameColumnFromCursor(getTableInfo(DbUtil.getTableName(cls))));
-            }
-            executeTableUpdate(DMLBuilder.addColumns(tableCursors));
-
-            setCurrentVersion(context,dbAnnotation);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void executeTableDrop(HashMap<String,String> dmls){
-        if (dmls == null || dmls.size() < 1) return;
-        getWritableDatabase().beginTransaction();
-        try {
-            DbMetaData dbMetaData = storage.getCurrentDbMeta(dbName);
-            for (String tableName : dmls.keySet()) {
-                try {
-                    getWritableDatabase().execSQL(dmls.get(tableName));
-                    dbMetaData.tableNames.remove(tableName);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            getWritableDatabase().setTransactionSuccessful();
-            storage.storeCurrentDbMeta(dbName,dbMetaData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        getWritableDatabase().endTransaction();
-
-    }
-
-    private void executeTableUpdate(HashMap<String,String> dmls){
-        if (dmls == null || dmls.size() < 1) return;
-        getWritableDatabase().beginTransaction();
-        for (String tableName : dmls.keySet()) {
-            try {
-                getWritableDatabase().execSQL(dmls.get(tableName));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        getWritableDatabase().setTransactionSuccessful();
-        getWritableDatabase().endTransaction();
-
     }
 
 
-    private void executeNewTableCreation(HashMap<String,String> ddls){
-        if (ddls == null || ddls.size() < 1) return;
-        getWritableDatabase().beginTransaction();
-        try {
-            DbMetaData dbMetaData = storage.getCurrentDbMeta(dbName);
-            for (String tableName : ddls.keySet()) {
-                try {
-                    getWritableDatabase().execSQL(ddls.get(tableName)); //Here after execution it can be certain that the table creation was successfull.
-                    dbMetaData.tableNames.add(tableName);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            getWritableDatabase().setTransactionSuccessful();
-            storage.storeCurrentDbMeta(dbName,dbMetaData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            getWritableDatabase().endTransaction();
-        }
-    }
-
-    Entity findRelatedEntity(Entity entity, Method method) {
+    Entity findRelatedEntityByMapping(Entity entity, Method method) {
         String foreignKeyColumn = getColumnName(method);
         Integer foreignKey = findForeignKeyFromEntity((Class<Entity>) entity.getClass(), entity.getId(), foreignKeyColumn);
         if (foreignKey == null || foreignKey < 1) return null;
@@ -221,7 +78,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         return relatedEntity;
     }
 
-    List<Entity> findRelatedEntities(Entity entity, Object holderClass){
+    List<Entity> findRelatedEntitiesByMapping(Entity entity, Object holderClass){
         Method method = holderClass.getClass().getEnclosingMethod();
         OneToMany oneToMany = method.getAnnotation(OneToMany.class);
         ManyToMany manyToMany = method.getAnnotation(ManyToMany.class);
@@ -262,21 +119,7 @@ public class DBExecutor extends SQLiteOpenHelper {
     }
 
 
-    private Integer findForeignKeyFromEntity(Class<Entity> entityClass, long id, String foreignKeyColumn) {
-        Integer foreignKey = -1;
-        if (foreignKeyColumn == null) return foreignKey;
-        try {
-            Cursor cursor = getReadableDatabase().rawQuery
-                    (QueryBuilder.findColumnById(entityClass, id, foreignKeyColumn), null);
-            if (cursor != null && cursor.getCount() > 0) {
-                cursor.moveToFirst();
-                foreignKey = cursor.getInt(cursor.getColumnIndex(foreignKeyColumn));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return foreignKey;
-    }
+
 
     Entity findById(Class<Entity> cls, long id) {
         Entity entity = null;
@@ -525,6 +368,8 @@ public class DBExecutor extends SQLiteOpenHelper {
         }
     }
 
+
+
     private int removeMapping(String tableName,String aColumn,long aValue){
         return getWritableDatabase().delete(tableName,
                 aColumn + " = ?",new String[] { String.valueOf(aValue) });
@@ -542,7 +387,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         }
     }
 
-    boolean doesPropertyExistsForMappingTable(String tableName,
+    private boolean doesPropertyExistsForMappingTable(String tableName,
                                               String aColumnName,long aValue,String bColumnName,long bValue) throws Exception{
       Cursor cursor = getReadableDatabase().rawQuery(new StringBuffer("SELECT * FROM ")
               .append(tableName).append(" WHERE ")
@@ -559,19 +404,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         return getReadableDatabase().rawQuery("PRAGMA table_info(" + tableName + ")", null);
     }
 
-    private List<String> getNameColumnFromCursor(Cursor cursor){
-        List<String> columnNames = new ArrayList<>();
-        if (cursor == null || cursor.getCount() < 1) return columnNames;
-        cursor.moveToFirst();
-        do {
-            try {
-                columnNames.add(cursor.getString(cursor.getColumnIndex("name")));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }while (cursor.moveToNext());
-        return columnNames;
-    }
+
 
     boolean tableExists(String tableName){
         Cursor cursor=  getReadableDatabase().rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name=?;",
@@ -579,5 +412,161 @@ public class DBExecutor extends SQLiteOpenHelper {
         return cursor != null && cursor.getCount() == 1;
     }
 
+    private Integer findForeignKeyFromEntity(Class<Entity> entityClass, long id, String foreignKeyColumn) {
+        Integer foreignKey = -1;
+        if (foreignKeyColumn == null) return foreignKey;
+        try {
+            Cursor cursor = getReadableDatabase().rawQuery
+                    (QueryBuilder.findColumnById(entityClass, id, foreignKeyColumn), null);
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                foreignKey = cursor.getInt(cursor.getColumnIndex(foreignKeyColumn));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return foreignKey;
+    }
 
+
+    // Mark: start of table management.
+
+    private static boolean isThisNewVersionOfDb(Context context, com.basilgregory.onam.annotations.DB dbAnnotation){
+        try {
+            Storage storage = new Storage(context);
+            return dbAnnotation.version() > storage.getCurrentDbMeta(dbAnnotation.name()).version;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private static void setCurrentVersion(Context context,com.basilgregory.onam.annotations.DB dbAnnotation){
+        try {
+            Storage storage = new Storage(context);
+            DbMetaData dbMetaData = storage.getCurrentDbMeta(dbAnnotation.name());
+            dbMetaData.version = dbAnnotation.version();
+            storage.storeCurrentDbMeta(dbAnnotation.name(),dbMetaData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    void createTables(Context context, Object o) {
+        try {
+            this.storage = new Storage(context);
+            com.basilgregory.onam.annotations.DB dbAnnotation =
+                    o.getClass().getAnnotation(com.basilgregory.onam.annotations.DB.class);
+            if (dbAnnotation == null) return;
+            if (!isThisNewVersionOfDb(context,dbAnnotation)) return;
+
+            ArrayList<Class> curatedTablesList = new ArrayList<>();//Curating list for table creation.
+            for (Class table:dbAnnotation.tables()){
+                if (tableExists(DbUtil.getTableName(table))) continue;
+                curatedTablesList.add(table);
+            }
+            //Creation of fresh tables directly from entities.
+            executeNewTableCreation(DDLBuilder.createTables(curatedTablesList));
+
+
+            //Getting the list of curated mapping tables.
+            List<String> mappingTables = new ArrayList<>();
+            HashMap<String,String> mappingTableCreateDDL = new HashMap<>();//Curating list for table creation.
+            for (Class table:dbAnnotation.tables()){
+                Method[] methods = table.getDeclaredMethods();
+                for (Method method:methods){
+                    if (method.getAnnotation(ManyToMany.class) == null) continue;
+                    JoinTable joinTableAnnotation = method.getAnnotation(JoinTable.class);
+                    if (joinTableAnnotation == null) continue;
+                    String mappingTableName = joinTableAnnotation.tableName();
+                    mappingTables.add(mappingTableName);
+                    if (tableExists(mappingTableName)) continue;
+                    Class targetEntity = joinTableAnnotation.targetEntity();
+                    String ddl = DDLBuilder.createMappingTables(mappingTableName,table,targetEntity);
+                    mappingTableCreateDDL.put(mappingTableName,ddl);
+                }
+            }
+            //Creation of mapping tables from #{ManyToMany} annotation getters.
+            executeNewTableCreation(mappingTableCreateDDL);
+
+            //Droping entities that are no more found in #{DB} annotation.
+            executeTableDrop(DMLBuilder.curateAndDropTables
+                    (storage.getCurrentDbMeta(dbName).tableNames,dbAnnotation.tables(),mappingTables));
+
+            //executing table renaming from entities.
+            executeTableUpdate(DMLBuilder.renameTables(dbAnnotation.tables()));
+
+
+            HashMap<Class,List<String>> tableCursors = new HashMap<>(dbAnnotation.tables().length);
+            for(Class cls:dbAnnotation.tables()) {
+                if (cls == null || cls.getAnnotation(Table.class) == null) continue;
+                tableCursors.put(cls,DbUtil.getColumnNamesFromCursor(getTableInfo(DbUtil.getTableName(cls))));
+            }
+            executeTableUpdate(DMLBuilder.addColumns(tableCursors));
+
+            setCurrentVersion(context,dbAnnotation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void executeTableDrop(HashMap<String,String> dmls){
+        if (dmls == null || dmls.size() < 1) return;
+        getWritableDatabase().beginTransaction();
+        try {
+            DbMetaData dbMetaData = storage.getCurrentDbMeta(dbName);
+            for (String tableName : dmls.keySet()) {
+                try {
+                    getWritableDatabase().execSQL(dmls.get(tableName));
+                    dbMetaData.tableNames.remove(tableName);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            getWritableDatabase().setTransactionSuccessful();
+            storage.storeCurrentDbMeta(dbName,dbMetaData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        getWritableDatabase().endTransaction();
+
+    }
+
+    private void executeTableUpdate(HashMap<String,String> dmls){
+        if (dmls == null || dmls.size() < 1) return;
+        getWritableDatabase().beginTransaction();
+        for (String tableName : dmls.keySet()) {
+            try {
+                getWritableDatabase().execSQL(dmls.get(tableName));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        getWritableDatabase().setTransactionSuccessful();
+        getWritableDatabase().endTransaction();
+
+    }
+
+
+    private void executeNewTableCreation(HashMap<String,String> ddls){
+        if (ddls == null || ddls.size() < 1) return;
+        getWritableDatabase().beginTransaction();
+        try {
+            DbMetaData dbMetaData = storage.getCurrentDbMeta(dbName);
+            for (String tableName : ddls.keySet()) {
+                try {
+                    getWritableDatabase().execSQL(ddls.get(tableName));
+                    dbMetaData.tableNames.add(tableName); //Here after execution it can be certain that the table creation was successful.
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            getWritableDatabase().setTransactionSuccessful();
+            storage.storeCurrentDbMeta(dbName,dbMetaData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            getWritableDatabase().endTransaction();
+        }
+    }
 }

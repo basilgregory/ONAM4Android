@@ -1,5 +1,7 @@
 package com.basilgregory.onam.android;
 
+import android.database.Cursor;
+
 import com.basilgregory.onam.annotations.Column;
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.OneToMany;
@@ -8,6 +10,8 @@ import com.basilgregory.onam.annotations.Table;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by donpeter on 8/29/17.
@@ -89,6 +93,20 @@ public class DbUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    static List<String> getColumnNamesFromCursor(Cursor cursor){
+        List<String> columnNames = new ArrayList<>();
+        if (cursor == null || cursor.getCount() < 1) return columnNames;
+        cursor.moveToFirst();
+        do {
+            try {
+                columnNames.add(cursor.getString(cursor.getColumnIndex("name")));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }while (cursor.moveToNext());
+        return columnNames;
     }
 
     private static Method findGetterMethod(String expectedMethodName,Class aClass){

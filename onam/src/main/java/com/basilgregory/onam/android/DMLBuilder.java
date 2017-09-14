@@ -6,6 +6,7 @@ import com.basilgregory.onam.annotations.Table;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,8 +80,10 @@ public class DMLBuilder {
     private static List<String> addColumns(List<String> existingTableColumns, Class newTableClass){
         List<String> addColumnsDml = new ArrayList<String>();
         if (existingTableColumns == null || newTableClass == null) return addColumnsDml;
-        for (Field field:newTableClass.getDeclaredFields()) {
+        Field[] declaredFields = newTableClass.getDeclaredFields();
+        for (Field field : declaredFields) {
             boolean fieldAlreadyInDb = false;
+            if (Modifier.isTransient(field.getModifiers())) continue; //Transient field are to be omitted from creation.
             for (String existingtableColumn :existingTableColumns){
                 try {
                     String expectedColumnNameForField = DbUtil.getColumnName(field);

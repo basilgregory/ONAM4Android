@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import com.basilgregory.onam.annotations.Table;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import static com.basilgregory.onam.android.DbUtil.invokeGetter;
 
@@ -79,6 +80,7 @@ public class QueryBuilder {
         Field[] fields = entity.getClass().getDeclaredFields();
         for (Field field: fields) {
             try {
+                if (Modifier.isTransient(field.getModifiers())) continue; //Transient field are already omitted from database.
                 if (field.getType().getAnnotation(Table.class) != null) {
                     Object relatedEntity = DbUtil.invokeGetter(field,entity);
                     if (relatedEntity == null) continue;
@@ -96,6 +98,7 @@ public class QueryBuilder {
         Field[] fields = entity.getClass().getDeclaredFields();
         for (Field field: fields) {
             try {
+                if (Modifier.isTransient(field.getModifiers())) continue; //Transient field are already omitted from database.
                 if (field.getType().getAnnotation(Table.class) != null) {
                     Object relatedEntity = DbUtil.invokeGetter(field,entity);
                     if (relatedEntity == null) continue;

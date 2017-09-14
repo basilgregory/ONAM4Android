@@ -84,14 +84,14 @@ public abstract class Entity implements Serializable{
      */
     protected <E extends Entity> E fetch(Entity relatedEntity, Object holderClass) {
         E entity = (E)((this.refresh || relatedEntity == null)
-                ? DBExecutor.getInstance().findRelatedEntity(this, holderClass.getClass().getEnclosingMethod())
+                ? DBExecutor.getInstance().findRelatedEntityByMapping(this, holderClass.getClass().getEnclosingMethod())
                 : relatedEntity);
         return  entity;
     }
     protected <E extends Entity> List<E> fetch(Object relatedEntityList, Object holderClass) {
         return (List<E>) (returnValueAsItIs ? relatedEntityList :
                 ((this.refresh || relatedEntityList == null || ((List)relatedEntityList).size() < 1)
-                        ? DBExecutor.getInstance().findRelatedEntities(this, holderClass)
+                        ? DBExecutor.getInstance().findRelatedEntitiesByMapping(this, holderClass)
                         : relatedEntityList));
     }
 
