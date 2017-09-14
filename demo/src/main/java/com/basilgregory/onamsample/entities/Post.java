@@ -17,6 +17,11 @@ import java.util.List;
 public class Post extends Entity {
     private String title;
     private String post;
+
+    //If you need to include a property that is not be inserted/updated to database then you have to specify the modifier transient
+    private transient String transientPost;
+
+
     private long created_at;
 
     private List<User> followers;
@@ -75,5 +80,13 @@ public class Post extends Entity {
 
     public void setFollowers(List<User> followers) {
         this.followers = followers;
+    }
+
+    public String getTransientPost() {
+        return transientPost;
+    }
+
+    public void setTransientPost(String transientPost) {
+        this.transientPost = transientPost;
     }
 }
