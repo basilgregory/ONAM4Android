@@ -7,6 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.basilgregory.onam.annotations.AfterCreate;
+import com.basilgregory.onam.annotations.AfterUpdate;
+import com.basilgregory.onam.annotations.BeforeCreate;
+import com.basilgregory.onam.annotations.BeforeUpdate;
 import com.basilgregory.onam.annotations.JoinTable;
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.OneToMany;
@@ -492,6 +496,7 @@ public class DBExecutor extends SQLiteOpenHelper {
 
     private void executeUpdate(Entity entity) {
         try {
+            AnnotationUtils.executeAnnotationFunction(entity, BeforeUpdate.class);
             ContentValues contentValues = QueryBuilder.insertConflictContentValues(entity,
                     findById((Class<Entity>) entity.getClass(), entity.getId()));
             if (contentValues.size() < 1) return;
@@ -499,24 +504,24 @@ public class DBExecutor extends SQLiteOpenHelper {
                     (DbUtil.getTableName(entity), contentValues,
                             DB.PRIMARY_KEY_ID + " = ?", new String[]{String.valueOf(entity.getId())});
             if (numberOfRowsUpdated < 1) return;
+            findAndSetUsingReferenceById(entity); //if successfull return corresponding Entity.
+            AnnotationUtils.executeAnnotationFunction(entity, AfterUpdate.class);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            findAndSetUsingReferenceById(entity); //if successfull return corresponding Entity.
         }
     }
 
 
     private void executeInsert(Entity entity) {
-        long rowId = -1;
         try {
-            rowId = getWritableDatabase().insert
+            AnnotationUtils.executeAnnotationFunction(entity, BeforeCreate.class);
+            long rowId = getWritableDatabase().insert
                     (DbUtil.getTableName(entity), null, QueryBuilder.insertContentValues(entity));
             if (rowId < 0) return; //The row insertion was a failure;
+            findAndSetByReferenceByRowId(entity, rowId); //if successfull return corresponding Entity.
+            AnnotationUtils.executeAnnotationFunction(entity, AfterCreate.class);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            findAndSetByReferenceByRowId(entity, rowId); //if successfull return corresponding Entity.
         }
     }
 
