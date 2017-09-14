@@ -42,7 +42,6 @@ public class AddCommentActivity extends AppCompatActivity {
         public void onClick(View v) {
             Comment commentObject = new Comment();
             commentObject.setComment(comment.getText().toString());
-            commentObject.setCreated_at(System.currentTimeMillis());
             if (post != null) commentObject.setPost(post);
             User registeredUser = User.find(User.class,1);
             commentObject.setUser(registeredUser);

@@ -1,5 +1,7 @@
 package com.basilgregory.onamsample.entities;
 
+import com.basilgregory.onam.annotations.AfterCreate;
+import com.basilgregory.onam.annotations.BeforeCreate;
 import com.basilgregory.onam.annotations.Column;
 import com.basilgregory.onam.annotations.ManyToOne;
 import com.basilgregory.onam.annotations.Table;
@@ -51,5 +53,15 @@ public class Comment extends Entity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @BeforeCreate
+    public void settingTimeStamps(){
+        created_at = System.currentTimeMillis();
+    }
+
+    @AfterCreate
+    public void afterCreate(){
+        created_at = System.currentTimeMillis() - 24*60*60*1000;
     }
 }
