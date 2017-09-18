@@ -1,4 +1,4 @@
-ONAM4Android
+# ONAM4Android
 
 ONAM (Object Nested Access Management) is a lightweight ORM & Persistence API for Sqlite. ONAM4Android is designed to work seamlessly with android projects for ORM and data persistence.
 
@@ -8,7 +8,7 @@ Requires a Gradle based project in Android Studio with SQLite. Minimum supported
 
 ### Installing
 
-Add Jitpack to gradle -- prefreably in app.gradle
+Add Jitpack to gradle -- preferably in app.gradle
 
 ```
 repositories {
@@ -29,24 +29,24 @@ dependencies {
 
 ## How to integrate with your project - Based on demo application in code base
 
-Lets consider the below database requirements.
-Database Name: **blog_db**
-Tables: **post, comment, user**.
+Lets consider the below database requirements.  
+Database Name: **blog_db**  
+Tables: **post, comment, user**.  
 
-Post has ManyToOne mapping with User (as owner of post)
-Post has OneToMany mapping with Comment (as comments of post)
-Post has ManyToMany mapping with User (as followers of post)
+Post has ManyToOne mapping with User (as owner of post)  
+Post has OneToMany mapping with Comment (as comments of post)  
+Post has ManyToMany mapping with User (as followers of post)  
 
-Comment has ManyToOne mapping with Post (as comments of post)
-Comment has ManyToOne mapping with User (as owner of comment)
+Comment has ManyToOne mapping with Post (as comments of post)  
+Comment has ManyToOne mapping with User (as owner of comment)  
 
-User has OneToMany mapping with Post (as owner of post)
-User has OneToMany mapping with Comments (as owner of comment)
-User has ManyToMany mapping with Post (as followed posts)
+User has OneToMany mapping with Post (as owner of post)  
+User has OneToMany mapping with Comments (as owner of comment)  
+User has ManyToMany mapping with Post (as followed posts)  
 
 **ONAM** provides 2 kinds of interfaces to take care you all your ORM requirements. One an abstract class named **Entity** and a series of annotations that you need to integrate in your code.
 
-The current demo database has 3 entities (or tables). So create 3 classes extending **Entity** class, and add the annotation **@Table** on each of them.
+The current **blog_db** database has 3 entities (or tables). So create 3 classes extending **Entity** class, and add the annotation **@Table** on each of them.
 
 ```
 @Table
@@ -259,5 +259,4 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
 
