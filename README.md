@@ -174,12 +174,12 @@ Finally, getter functions for related entities would be,
 ```
 Now, specify the mapping for each of the getter functions,
 
-Recall that Post has 3 types of mappings
-Post has ManyToMany mapping with User (as followers of post)
-Post has OneToMany mapping with Comment (as comments of post)
-Post has ManyToOne mapping with User (as owner of post)
+Recall that Post has 3 types of mappings  
+Post has ManyToMany mapping with User (as followers of post)  
+Post has OneToMany mapping with Comment (as comments of post)  
+Post has ManyToOne mapping with User (as owner of post)  
 
-**Post** has OneToMany mapping with **Comment**
+**Post** has OneToMany mapping with **Comment**  
 For OneToMany mapping a foreignkey for **Post** entity is needed in **Comment** table, you may suggest a foreign key column name.
 ```
     @OneToMany(referencedColumnName = "post_id")
@@ -187,7 +187,7 @@ For OneToMany mapping a foreignkey for **Post** entity is needed in **Comment** 
         return fetch(this.comments,new Comment(){});
     }
 ```
-And In **Comments** entity, we have ManyToOne mapping
+And In **Comments** entity, we have ManyToOne mapping  
 Comment has ManyToOne mapping with Post (as comments of post)
 ```
     @ManyToOne
@@ -196,10 +196,12 @@ Comment has ManyToOne mapping with Post (as comments of post)
         return fetch(this.post,new Post(){});
     }
 ```
-Here a foreign key column named *post_id* will be created in **Comment** table.
-If you are providing a column name for ManyToOne mapping, then correspondingly the same name as to be provided for the OneToMany mapping in related entity as referencedColumnName, here *post_id* .
+Here a foreign key column named *post_id* will be created in **Comment** table.  
+If you are providing a column name for ManyToOne mapping, then correspondingly  
+the same name as to be provided for the OneToMany mapping in related entity as  
+referencedColumnName, here *post_id*.
 
-**Post** has ManyToOne mapping with **User**
+**Post** has ManyToOne mapping with **User**  
 For ManyToOne mapping a foreignkey for **User** entity is needed at **Post** table, you may suggest a foreign key column name.
 ```
     @ManyToOne
@@ -207,7 +209,7 @@ For ManyToOne mapping a foreignkey for **User** entity is needed at **Post** tab
         return fetch(this.user,new User(){});
     }
 ```
-Here a foreign key column named *user_id* will be created automaticaly as no explicit name is provided in **Post** table.
+Here a foreign key column named *user_id* will be created automaticaly as no explicit name is provided in **Post** table.  
 Similarly, **User** entity has
 ```
     @OneToMany
