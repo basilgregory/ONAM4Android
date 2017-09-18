@@ -4,10 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+
 import com.basilgregory.onam.android.Entity;
 import com.basilgregory.onam.annotations.DB;
 import com.basilgregory.onamsample.adapter.PostsAdapter;
@@ -94,6 +95,7 @@ public class AllPostsActivity extends AppCompatActivity {
             }
         }));
         postsAdapter.notifyDataSetChanged();
+
     }
 
 

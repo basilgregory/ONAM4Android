@@ -1,6 +1,5 @@
 package com.basilgregory.onamsample.entities;
 
-import com.basilgregory.onam.annotations.JoinTable;
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.OneToMany;
 import com.basilgregory.onam.annotations.Table;
@@ -37,7 +36,7 @@ public class User extends Entity {
         this.bio = bio;
     }
 
-    @OneToMany(referencedColumnName = "owner_id")
+    @OneToMany
     public List<Post> getPosts() {
         return fetch(this.posts,new Post(){});
     }
@@ -55,8 +54,7 @@ public class User extends Entity {
         this.comments = comments;
     }
 
-    @ManyToMany
-    @JoinTable(tableName = "user_followers", targetEntity = Post.class)
+    @ManyToMany(tableName = "user_followers", targetEntity = Post.class)
     public List<Post> getFollowedPosts() {
         return fetch(this.followedPosts,new Post(){});
     }

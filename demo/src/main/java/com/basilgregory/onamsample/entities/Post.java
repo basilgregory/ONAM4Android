@@ -1,12 +1,10 @@
 package com.basilgregory.onamsample.entities;
 
-import com.basilgregory.onam.annotations.Column;
-import com.basilgregory.onam.annotations.JoinTable;
+import com.basilgregory.onam.android.Entity;
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.ManyToOne;
 import com.basilgregory.onam.annotations.OneToMany;
 import com.basilgregory.onam.annotations.Table;
-import com.basilgregory.onam.android.Entity;
 
 import java.util.List;
 
@@ -63,7 +61,6 @@ public class Post extends Entity {
     }
 
     @ManyToOne
-    @Column(name = "owner_id")
     public User getUser() {
         return fetch(this.user,new User(){});
     }
@@ -72,8 +69,7 @@ public class Post extends Entity {
         this.user = user;
     }
 
-    @ManyToMany
-    @JoinTable(tableName = "user_followers", targetEntity = User.class)
+    @ManyToMany(tableName = "user_followers", targetEntity = User.class)
     public List<User> getFollowers() {
         return fetch(this.followers,new User(){});
     }
