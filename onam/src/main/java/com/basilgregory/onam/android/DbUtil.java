@@ -8,6 +8,7 @@ import com.basilgregory.onam.annotations.OneToMany;
 import com.basilgregory.onam.annotations.OneToOne;
 import com.basilgregory.onam.annotations.Table;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -21,6 +22,14 @@ public class DbUtil {
     public static String getTableName(Entity entity){
         return getTableName((Class<Entity>)entity.getClass());
     }
+
+    public static String getReferencedColumnName(Annotation annotation,Class entityClass){
+        if (annotation == null) return null;
+        if (((OneToMany) annotation).referencedColumnName().isEmpty())
+            return entityClass.getSimpleName().toLowerCase()+"_id";
+        return ((OneToMany) annotation).referencedColumnName();
+    }
+
     public static String getTableName(Class<Entity> cls){
         return (cls.getAnnotation(Table.class) == null || cls.getAnnotation(Table.class).name().isEmpty()) ?
                 cls.getSimpleName().toLowerCase() :

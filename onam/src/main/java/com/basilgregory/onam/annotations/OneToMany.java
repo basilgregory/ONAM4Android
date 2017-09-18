@@ -12,5 +12,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OneToMany {
     short fetchType() default FetchType.LAZY;
-    String referencedColumnName();
+    String referencedColumnName() default  "";
 }

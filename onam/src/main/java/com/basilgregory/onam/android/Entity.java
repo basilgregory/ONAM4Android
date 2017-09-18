@@ -88,11 +88,11 @@ public abstract class Entity implements Serializable{
                 : relatedEntity);
         return  entity;
     }
-    protected <E extends Entity> List<E> fetch(Object relatedEntityList, Object holderClass) {
+    protected <E extends Entity> List<E> fetch(List<E>  relatedEntityList, Object holderClass) {
         return (List<E>) (returnValueAsItIs ? relatedEntityList :
-                ((this.refresh || relatedEntityList == null || ((List)relatedEntityList).size() < 1)
+                ((this.refresh || relatedEntityList == null || relatedEntityList.size() < 1
                         ? DBExecutor.getInstance().findRelatedEntitiesByMapping(this, holderClass)
-                        : relatedEntityList));
+                        : relatedEntityList)));
     }
 
     /**

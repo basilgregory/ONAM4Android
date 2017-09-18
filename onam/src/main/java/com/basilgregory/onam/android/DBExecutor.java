@@ -10,7 +10,6 @@ import com.basilgregory.onam.annotations.AfterCreate;
 import com.basilgregory.onam.annotations.AfterUpdate;
 import com.basilgregory.onam.annotations.BeforeCreate;
 import com.basilgregory.onam.annotations.BeforeUpdate;
-import com.basilgregory.onam.annotations.JoinTable;
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.OneToMany;
 import com.basilgregory.onam.annotations.Table;
@@ -30,6 +29,9 @@ import static com.basilgregory.onam.android.DbUtil.getMappingForeignColumnNameCl
  */
 
 public class DBExecutor extends SQLiteOpenHelper {
+
+
+    //region Boiler plate code
     Storage storage;
     String dbName;
     private static DBExecutor instance = null;
@@ -67,7 +69,9 @@ public class DBExecutor extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
+    //endregion
 
+    //Interface methods used by Entity.java
 
     Entity findRelatedEntityByMapping(Entity entity, Method method) {
         String foreignKeyColumn = getColumnName(method);
@@ -78,6 +82,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         return relatedEntity;
     }
 
+
     List<Entity> findRelatedEntitiesByMapping(Entity entity, Object holderClass){
         Method method = holderClass.getClass().getEnclosingMethod();
         OneToMany oneToMany = method.getAnnotation(OneToMany.class);
@@ -85,40 +90,9 @@ public class DBExecutor extends SQLiteOpenHelper {
         if (oneToMany != null)
             return findOneToManyRelatedEntities(entity,holderClass,oneToMany,method);
         if (manyToMany != null)
-            return findManyToManyRelatedEntities(entity,holderClass,method);
+            return findManyToManyRelatedEntities(manyToMany,entity,holderClass,method);
         return null;
     }
-
-    private List<Entity> findOneToManyRelatedEntities(Entity entity, Object holderClass
-            ,OneToMany oneToMany,Method method ) {
-        Class collectionType = holderClass.getClass().getSuperclass();
-        List<Entity> entities = findByProperty(collectionType,
-                oneToMany.referencedColumnName(),entity.getId(),null,null);
-        DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),entities);
-        return entities;
-
-    }
-
-    /**
-     * Mapping table name has to be provided by the user.
-     * Foreignkey column names will be auto generated using #{getMappingForeignColumnNameClass}.
-     * @param entity
-     * @param holderClass
-     * @param method
-     * @return
-     */
-    private List<Entity> findManyToManyRelatedEntities(Entity entity, Object holderClass
-            ,Method method ) {
-        JoinTable joinTable = method.getAnnotation(JoinTable.class);
-        if (joinTable == null) return null;
-        Cursor cursor =  findByProperty(joinTable.tableName(),
-                getMappingForeignColumnNameClass(entity.getClass()),entity.getId(),null,null);
-        List<Entity> entities  = EntityBuilder.getEntityFromMappingTable(cursor,holderClass.getClass().getSuperclass());
-        DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),entities);
-        return entities;
-    }
-
-
 
 
     Entity findById(Class<Entity> cls, long id) {
@@ -132,6 +106,65 @@ public class DBExecutor extends SQLiteOpenHelper {
         }finally {
             return entity;
         }
+    }
+
+    Entity findByUniqueProperty(Class<Entity> cls, String columnName, Object value) {
+        Entity entity = null;
+        try {
+            entity =  EntityBuilder.convertToEntity(cls, getReadableDatabase().rawQuery
+                    (QueryBuilder.findByUniqueProperty(cls, columnName, value), null));
+            fetchAndSetFirstDegreeRelatedObject(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return entity;
+    }
+
+    List<Entity> findByProperty(Class<Entity> cls, String columnName, Object value, Integer startIndex, Integer pageSize) {
+        return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
+                        (QueryBuilder.findByProperty(cls, columnName, value, startIndex, pageSize), null)
+                ,cls);
+    }
+
+    List<Entity> findAll(Class<Entity> cls,String whereClause, Integer startIndex, Integer pageSize) {
+        return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
+                        (QueryBuilder.findAll(cls, whereClause, startIndex, pageSize), null)
+                ,cls);
+    }
+
+    List<Entity> findAllWithOrderBy(Class<Entity> cls, String whereClause, String orderByColumn,boolean descending, Integer startIndex, Integer pageSize) {
+        return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
+                        (QueryBuilder.findAll(cls, whereClause,orderByColumn,descending, startIndex, pageSize), null)
+                ,cls);
+    }
+
+    // Private methods
+
+    private List<Entity> findOneToManyRelatedEntities(Entity entity, Object holderClass
+            ,OneToMany oneToMany,Method method ) {
+        Class collectionType = holderClass.getClass().getSuperclass();
+        List<Entity> entities = findByProperty(collectionType,
+                DbUtil.getReferencedColumnName(oneToMany,entity.getClass()),entity.getId(),null,null);
+        DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),entities);
+        return entities;
+
+    }
+
+    /**
+     * Mapping table name has to be provided by the user.
+     * Foreignkey column names will be auto generated using #{getMappingForeignColumnNameClass}.
+     * @param entity
+     * @param holderClass
+     * @param method
+     * @return
+     */
+    private List<Entity> findManyToManyRelatedEntities(ManyToMany manyToMany,Entity entity, Object holderClass
+            , Method method ) {
+        Cursor cursor =  findByProperty(manyToMany.tableName(),
+                getMappingForeignColumnNameClass(entity.getClass()),entity.getId(),null,null);
+        List<Entity> entities  = EntityBuilder.getEntityFromMappingTable(cursor,holderClass.getClass().getSuperclass());
+        DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),entities);
+        return entities;
     }
 
     private void fetchAndSetFirstDegreeRelatedObject(Entity entity) {
@@ -192,35 +225,6 @@ public class DBExecutor extends SQLiteOpenHelper {
         }
     }
 
-    Entity findByUniqueProperty(Class<Entity> cls, String columnName, Object value) {
-        Entity entity = null;
-        try {
-            entity =  EntityBuilder.convertToEntity(cls, getReadableDatabase().rawQuery
-                    (QueryBuilder.findByUniqueProperty(cls, columnName, value), null));
-            fetchAndSetFirstDegreeRelatedObject(entity);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return entity;
-    }
-
-    List<Entity> findByProperty(Class<Entity> cls, String columnName, Object value, Integer startIndex, Integer pageSize) {
-        return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
-                (QueryBuilder.findByProperty(cls, columnName, value, startIndex, pageSize), null)
-                ,cls);
-    }
-
-    List<Entity> findAll(Class<Entity> cls,String whereClause, Integer startIndex, Integer pageSize) {
-        return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
-                (QueryBuilder.findAll(cls, whereClause, startIndex, pageSize), null)
-                ,cls);
-    }
-
-    List<Entity> findAllWithOrderBy(Class<Entity> cls, String whereClause, String orderByColumn,boolean descending, Integer startIndex, Integer pageSize) {
-        return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
-                (QueryBuilder.findAll(cls, whereClause,orderByColumn,descending, startIndex, pageSize), null)
-                ,cls);
-    }
 
     private List<Entity> convertToEntityAndFetchFirstDegreeRelatedEntity(Cursor cursor,Class<Entity> entityClass){
         List<Entity> entities = new ArrayList<Entity>();
@@ -300,13 +304,12 @@ public class DBExecutor extends SQLiteOpenHelper {
         Method[] methods = masterEntity.getClass().getDeclaredMethods();
         for (Method method: methods) {
             try {
-                if (method.getAnnotation(ManyToMany.class) == null) continue;
-                JoinTable joinTable = method.getAnnotation(JoinTable.class);
-                if (joinTable == null) continue;
+                ManyToMany manyToMany = method.getAnnotation(ManyToMany.class);
+                if (manyToMany == null) continue;
                 List<Entity> getterResponse = (List<Entity>) method.invoke(masterEntity);
                 if (getterResponse == null) continue; //rest will be executed only if the mapping or list of entities returned is not null.
-                String tableName = joinTable.tableName();
-                Class targetEntity = joinTable.targetEntity();
+                String tableName = manyToMany.tableName();
+                Class targetEntity = manyToMany.targetEntity();
                 removeMapping(tableName,getMappingForeignColumnNameClass(masterEntity.getClass()),masterEntity.getId());
                 for (Entity entity:getterResponse){
                     if (entity == null) continue;
@@ -430,7 +433,7 @@ public class DBExecutor extends SQLiteOpenHelper {
 
 
     // Mark: start of table management.
-
+    //region Database management
     private static boolean isThisNewVersionOfDb(Context context, com.basilgregory.onam.annotations.DB dbAnnotation){
         try {
             Storage storage = new Storage(context);
@@ -475,13 +478,12 @@ public class DBExecutor extends SQLiteOpenHelper {
             for (Class table:dbAnnotation.tables()){
                 Method[] methods = table.getDeclaredMethods();
                 for (Method method:methods){
-                    if (method.getAnnotation(ManyToMany.class) == null) continue;
-                    JoinTable joinTableAnnotation = method.getAnnotation(JoinTable.class);
-                    if (joinTableAnnotation == null) continue;
-                    String mappingTableName = joinTableAnnotation.tableName();
+                    ManyToMany manyToMany = method.getAnnotation(ManyToMany.class);
+                    if ( manyToMany == null) continue;
+                    String mappingTableName = manyToMany.tableName();
                     mappingTables.add(mappingTableName);
                     if (tableExists(mappingTableName)) continue;
-                    Class targetEntity = joinTableAnnotation.targetEntity();
+                    Class targetEntity = manyToMany.targetEntity();
                     String ddl = DDLBuilder.createMappingTables(mappingTableName,table,targetEntity);
                     mappingTableCreateDDL.put(mappingTableName,ddl);
                 }
@@ -569,4 +571,6 @@ public class DBExecutor extends SQLiteOpenHelper {
             getWritableDatabase().endTransaction();
         }
     }
+
+    //endregion
 }

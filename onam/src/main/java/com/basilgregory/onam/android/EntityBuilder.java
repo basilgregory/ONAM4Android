@@ -69,21 +69,17 @@ public class EntityBuilder {
     }
 
     static Entity convertToEntity(Entity entity,Cursor cursor){
-        if (cursor != null && cursor.getCount() > 0 ) {
-            cursor.moveToFirst();
-            Field[] fields = entity.getClass().getDeclaredFields();
-            return convertToEntity((Class<Entity>) entity.getClass(),cursor,fields,entity);
-        }
-        return null;
+        if (cursor == null || cursor.getCount() < 1) return null;
+        cursor.moveToFirst();
+        Field[] fields = entity.getClass().getDeclaredFields();
+        return convertToEntity((Class<Entity>) entity.getClass(),cursor,fields,entity);
     }
 
     static Entity convertToEntity(Class<Entity> cls,Cursor cursor){
-        if (cursor != null && cursor.getCount() > 0 ) {
-            cursor.moveToFirst();
-            Field[] fields = cls.getDeclaredFields();
-            return convertToEntity(cls,cursor,fields,null);
-        }
-        return null;
+        if (cursor == null || cursor.getCount() < 1) return null;
+        cursor.moveToFirst();
+        Field[] fields = cls.getDeclaredFields();
+        return convertToEntity(cls,cursor,fields,null);
     }
 
     static Entity convertToEntity(Class<Entity> cls,Cursor cursor,Field[] fields){
