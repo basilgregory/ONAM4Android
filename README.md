@@ -33,6 +33,22 @@ Lets consider the below database requirements.
 Database Name: **blog_db**  
 Tables: **post, comment, user**.  
 
+You need to call init() function in your launcher Activity onCreate().
+
+```
+Entity.init(this);
+```
+
+You need to specify the Entity classes using @DB annotation along with name and version of your database, in the same launcher Activity.
+
+```
+@DB(name = "blog_db",
+        tables = {Post.class,Comment.class,User.class
+}, version = 1)
+```
+
+
+Types of mappings that are needed,
 Post has ManyToOne mapping with User (as owner of post)  
 Post has OneToMany mapping with Comment (as comments of post)  
 Post has ManyToMany mapping with User (as followers of post)  
@@ -44,9 +60,9 @@ User has OneToMany mapping with Post (as owner of post)
 User has OneToMany mapping with Comments (as owner of comment)  
 User has ManyToMany mapping with Post (as followed posts)  
 
-**ONAM** provides 2 kinds of interfaces to take care you all your ORM requirements. One an abstract class named **Entity** and a series of annotations that you need to integrate in your code.
+**ONAM** provides 2 kinds of interfaces to take care of you all your ORM requirements. One an abstract class named **Entity** and a series of annotations that you need to integrate in your code.
 
-The current **blog_db** database has 3 entities (or tables). So create 3 classes extending **Entity** class, and add the annotation **@Table** on each of them.
+The current **blog_db** database has 3 entities (or tables). So lets create 3 classes extending **Entity** class, and add the annotation **@Table** on each of them.
 
 ```
 @Table
@@ -115,7 +131,7 @@ Now generate getter and setters for all fields ( This is mandatory for all field
 ```
 
 No changes are needed in setter functions. 
-For getter functions that returns entity/List<Enitity> (that has some mapping relation), like **User**,**Comment**, you need to replace the return statement. 
+For getter functions that returns entity/List<Enitity> (that has some mapping relation), like **User**, **Comment**, you need to replace the return statement. 
 
 In this case, for the following functions.
 ```
@@ -187,7 +203,7 @@ For OneToMany mapping a foreignkey for **Post** entity is needed in **Comment** 
         return fetch(this.comments,new Comment(){});
     }
 ```
-And In **Comments** entity, we have ManyToOne mapping  
+And In **Comments** entity, 
 Comment has ManyToOne mapping with Post (as comments of post)
 ```
     @ManyToOne
@@ -209,7 +225,7 @@ For ManyToOne mapping a foreignkey for **User** entity is needed at **Post** tab
         return fetch(this.user,new User(){});
     }
 ```
-Here a foreign key column named *user_id* will be created automaticaly as no explicit name is provided in **Post** table.  
+Here a foreign key column named *user_id* will be created automatically, as no explicit name is provided in **Post** table.  
 Similarly, **User** entity has
 ```
     @OneToMany
@@ -260,5 +276,5 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/basilgregory/ONAM4Android/blob/master/LICENSE) file for details
 
