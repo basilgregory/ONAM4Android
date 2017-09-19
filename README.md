@@ -83,7 +83,7 @@ public class Post extends Entity {
 }
 ```
 
-All fields will be converted to database columns. All fields with transient modifier *( in this case* private transient String transientPost *)* will be ommited out. You may use such fields to do you bidding at freewill.
+All fields will be converted to database columns. All fields with transient modifier *( in this case* private transient String transientPost *)* will be ommited out. You may use such fields to do your bidding at freewill.
 
 Now generate getter and setters for all fields ( This is mandatory for all fields except transient fields, *your choice* ).
 
@@ -247,11 +247,11 @@ Correspondingly in **User** entity, the tableName should be same.
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/basilgregory/ONAM4Android/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/basilgregory/ONAM4Android/tags). 
 
 ## Authors
 
