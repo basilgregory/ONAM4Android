@@ -51,10 +51,10 @@ public class EntityBuilder {
                         firstParameterType,columnName);
                 setter.invoke(entity,valueFromDatabase);
             } catch (IllegalStateException e) {
-                Logger.InternalLogger.w("Field ("+field.getName()
+                L.InternalLogger.w("Field ("+field.getName()
                         +") of type ("+field.getType().getSimpleName().toUpperCase()
                         +") is not a match with the database types (possibly a LIST)");
-                Logger.InternalLogger.d(e.getLocalizedMessage());
+                L.InternalLogger.d(e.getLocalizedMessage());
             }catch (Exception e) {
                 e.printStackTrace();
             }

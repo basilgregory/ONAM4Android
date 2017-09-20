@@ -110,8 +110,8 @@ public class QueryBuilder {
                         try {
                             FieldType.addValues(contentValues,field,newReturnValue);
                         } catch (Exception e) {
-                            Logger.InternalLogger.w("Field type is not a match with the database types (possibly a LIST)");
-                            Logger.InternalLogger.d(e.getLocalizedMessage());
+                            L.InternalLogger.w("Field type is not a match with the database types (possibly a LIST)");
+                            L.InternalLogger.d(e.getLocalizedMessage());
                         }
                     }
                 }

@@ -214,9 +214,9 @@ public class DbUtil {
             if (field.getType().getAnnotation(Table.class) == null) //Field is not a related Entity but is an attribute.
                 return FieldType.adjustedValueOf(field.getType().getSimpleName().toUpperCase()).getDataType();
         } catch (IllegalArgumentException e) {
-            Logger.InternalLogger.w("Field type is not a match with the database types (possibly a LIST) " +
+            L.InternalLogger.w("Field type is not a match with the database types (possibly a LIST) " +
                     "-- DbUtil.findType("+field.getName()+")");
-            Logger.InternalLogger.d(e.getLocalizedMessage());
+            L.InternalLogger.d(e.getLocalizedMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
