@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.basilgregory.onam.android.Entity;
+import com.basilgregory.onam.android.L;
 import com.basilgregory.onam.annotations.DB;
 import com.basilgregory.onamsample.adapter.PostsAdapter;
 import com.basilgregory.onamsample.entities.Comment;
@@ -43,6 +44,9 @@ public class AllPostsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_all_posts);
 
         //This init should be called in the activity #{onCreate} where you have #{DB} annotation added.
+        L.getInstance().setVerbose(true);
+        L.getInstance().setDebug(true);
+        L.getInstance().setVerboseInternal(true);
         Entity.init(this);
         registerUser();
         connectViews();
