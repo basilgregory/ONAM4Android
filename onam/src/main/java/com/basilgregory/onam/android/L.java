@@ -14,38 +14,37 @@ public class L {
         warning = true;
         error = true;
         verbose = false;
-        info = false;
+        debug = false;
     }
 
     public static L getInstance() {
         return lInstance == null ? new L() : lInstance;
     }
 
-    static boolean verbose, info, warning, error;
+    private static boolean verbose, debug, warning, error;
+
+    public static void setDebug(boolean debug) {
+        L.debug = debug;
+    }
 
     public void setVerbose(boolean verboseValue) {
         verbose = verboseValue;
     }
 
-    public void setInfo(boolean infoValue) {
-        info = infoValue;
-    }
 
-    public void setWarning(boolean warningValue) {
-        warning = warningValue;
-    }
 
-    public void setError(boolean errorValue) {
-        error = errorValue;
-    }
 
-    static void d(String message){
+    static void vi(String message){
         if (!verbose) return;
-        Log.d("ONAM/debug",message);
+        Log.d("ONAM/internal",message);
     }
-    static void i(String message){
-        if (!info) return;
-        Log.d("ONAM/info",message);
+    static void v(String message){
+        if (!verbose) return;
+        Log.d("ONAM/verbose",message);
+    }
+    static void d(String message){
+        if (!debug) return;
+        Log.d("ONAM/debug",message);
     }
     static void w(String message){
         if (!warning) return;

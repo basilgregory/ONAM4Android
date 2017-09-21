@@ -74,10 +74,13 @@ public class DBExecutor extends SQLiteOpenHelper {
     //Interface methods used by Entity.java
 
     Entity findRelatedEntityByMapping(Entity entity, Method method) {
+        L.v("executing method "+method.getName()+" in entity "+entity.getClass().getSimpleName());
         String foreignKeyColumn = getColumnName(method);
+        L.v("fetching foreign key from column "+foreignKeyColumn+" in entity "+entity.getClass().getSimpleName());
         Integer foreignKey = findForeignKeyFromEntity((Class<Entity>) entity.getClass(), entity.getId(), foreignKeyColumn);
         if (foreignKey == null || foreignKey < 1) return null;
         Entity relatedEntity = findById((Class<Entity>) method.getReturnType(), foreignKey);
+        L.v("fetching related entity "+method.getReturnType().getSimpleName() + "with id "+foreignKey);
         DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),relatedEntity);
         return relatedEntity;
     }
@@ -85,12 +88,14 @@ public class DBExecutor extends SQLiteOpenHelper {
 
     List<Entity> findRelatedEntitiesByMapping(Entity entity, Object holderClass){
         Method method = holderClass.getClass().getEnclosingMethod();
+        L.v("executing method "+method.getName()+" in entity "+entity.getClass().getSimpleName());
         OneToMany oneToMany = method.getAnnotation(OneToMany.class);
         ManyToMany manyToMany = method.getAnnotation(ManyToMany.class);
         if (oneToMany != null)
             return findOneToManyRelatedEntities(entity,holderClass,oneToMany,method);
         if (manyToMany != null)
             return findManyToManyRelatedEntities(manyToMany,entity,holderClass,method);
+        L.w("No required mapping found (missed @OneToMany/@ManyToMany mapping annotation ?)");
         return null;
     }
 
@@ -102,7 +107,8 @@ public class DBExecutor extends SQLiteOpenHelper {
                     (QueryBuilder.findById(cls, id), null));
             fetchAndSetFirstDegreeRelatedObject(entity);
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("fetching entity "+cls.getSimpleName() + "with id "+id+" failed");
+            L.e(e.getLocalizedMessage());
         }finally {
             return entity;
         }
@@ -115,7 +121,9 @@ public class DBExecutor extends SQLiteOpenHelper {
                     (QueryBuilder.findByUniqueProperty(cls, columnName, value), null));
             fetchAndSetFirstDegreeRelatedObject(entity);
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("fetching entity "+cls.getSimpleName() + "for unique property "+columnName
+                    +" with value "+value+" failed");
+            L.e(e.getLocalizedMessage());
         }
         return entity;
     }
@@ -176,13 +184,18 @@ public class DBExecutor extends SQLiteOpenHelper {
                 if (DbUtil.getFetchType(field) != FetchType.EAGER)
                     continue; //Fetching related entity only if fetch type is eager.
                 String foreignKeyColumn = getColumnName(field);
+                L.v("fetching foreign key from column "+foreignKeyColumn+" in entity "+entity.getClass().getSimpleName()
+                        +" for field "+field.getName());
                 Integer foreignKey = findForeignKeyFromEntity((Class<Entity>) entity.getClass(), entity.getId(), foreignKeyColumn);
+                L.v("fetching related entity "+entity.getClass().getSimpleName() + "with id "+foreignKey);
                 if (foreignKey == null || foreignKey < 1) continue;
                 Object relatedObject = DbUtil.invokeGetter(field, entity);
                 if (relatedObject != null && relatedObject instanceof Entity)
                     findAndSetUsingReferenceById((Entity) relatedObject, foreignKey);
             } catch (Exception e) {
-                e.printStackTrace();
+                L.w("Error while fetching related entity "+entity.getClass().getSimpleName()+" for field "+
+                        field.getName());
+                L.e(e.getLocalizedMessage());
             }
         }
 
@@ -260,13 +273,20 @@ public class DBExecutor extends SQLiteOpenHelper {
     long delete(Entity entity){
         long numberOfRowsAffected = 0;
         try {
-            if (entity.getId() < 1) return numberOfRowsAffected;
+            L.vi("About to remove entity "+entity.getClass().getSimpleName()+" with id "+entity.getId());
+            if (entity.getId() < 1) {
+                L.v("Cant remove entity "+entity.getClass().getSimpleName()+" with id "+entity.getId());
+                L.v("Entity id has to be greater than 1");
+                return numberOfRowsAffected;
+            }
+            L.d("Removing entity "+entity.getClass().getSimpleName()+" with id "+entity.getId());
             getWritableDatabase().beginTransaction();
             numberOfRowsAffected = getWritableDatabase().delete(DbUtil.getTableName(entity),
                     DB.PRIMARY_KEY_ID + " = ?",new String[] { String.valueOf(entity.getId()) });
             getWritableDatabase().setTransactionSuccessful();
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("Error while removing entity "+entity.getClass().getSimpleName()+" with id "+entity.getId());
+            L.e(e.getLocalizedMessage());
         } finally {
             getWritableDatabase().endTransaction();
         }
@@ -275,13 +295,15 @@ public class DBExecutor extends SQLiteOpenHelper {
 
     void save(Entity entity) {
         try {
+            L.vi("About to save entity "+entity.getClass().getSimpleName()+" with id "+entity.getId());
             getWritableDatabase().beginTransaction();
             entity.setReturnValueAsItIs(true); //Makes sure that only entity related values that the user has set will be returned.
             insertOrUpdateEntity(entity);
             findAndInsertMappingObject(entity);
             getWritableDatabase().setTransactionSuccessful();
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("Error while saving entity "+entity.getClass().getSimpleName());
+            L.e(e.getLocalizedMessage());
         } finally {
             entity.setReturnValueAsItIs(false);
             getWritableDatabase().endTransaction();
@@ -294,7 +316,8 @@ public class DBExecutor extends SQLiteOpenHelper {
             if (entity.getId() > 0) executeUpdate(entity);
             else executeInsert(entity);
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("Error while saving entity "+entity.getClass().getSimpleName());
+            L.e(e.getLocalizedMessage());
         } finally {
             return entity;
         }
@@ -319,16 +342,23 @@ public class DBExecutor extends SQLiteOpenHelper {
                             ,entity.getId());
                 }
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                L.w("Error while saving mapping entity "+masterEntity.getClass().getSimpleName()
+                        +" with method "+method.getName());
+                L.e(e.getLocalizedMessage());
             } catch (IllegalArgumentException e) {
-                e.printStackTrace();
+                L.w("Error while saving mapping entity "+masterEntity.getClass().getSimpleName()
+                        +" with method "+method.getName());
+                L.e(e.getLocalizedMessage());
             } catch (Exception e) {
-                e.printStackTrace();
+                L.w("Error while saving mapping entity "+masterEntity.getClass().getSimpleName()
+                        +" with method "+method.getName());
+                L.e(e.getLocalizedMessage());
             }
         }
     }
 
     private void lookForRelatedObjects(Entity entity) throws Exception {
+        L.vi("Looking for related entities for "+entity.getClass().getSimpleName());
         Field[] fields = entity.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.getType().getAnnotation(Table.class) != null) {
@@ -346,14 +376,19 @@ public class DBExecutor extends SQLiteOpenHelper {
             ContentValues contentValues = QueryBuilder.insertConflictContentValues(entity,
                     findById((Class<Entity>) entity.getClass(), entity.getId()));
             if (contentValues.size() < 1) return;
+            L.d("Update operation "+DbUtil.getTableName(entity));
+            L.d("Update entity row with id "+String.valueOf(entity.getId()));
+            L.d("Values "+contentValues.toString());
             int numberOfRowsUpdated = getWritableDatabase().update
                     (DbUtil.getTableName(entity), contentValues,
                             DB.PRIMARY_KEY_ID + " = ?", new String[]{String.valueOf(entity.getId())});
+            L.d("Number of rows affected "+numberOfRowsUpdated);
             if (numberOfRowsUpdated < 1) return;
             findAndSetUsingReferenceById(entity); //if successfull return corresponding Entity.
             AnnotationUtils.executeAnnotationFunction(entity, AfterUpdate.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("Error while entity update "+entity.getClass().getSimpleName());
+            L.e(e.getLocalizedMessage());
         }
     }
 
@@ -361,19 +396,25 @@ public class DBExecutor extends SQLiteOpenHelper {
     private void executeInsert(Entity entity) {
         try {
             AnnotationUtils.executeAnnotationFunction(entity, BeforeCreate.class);
+            ContentValues contentValues = QueryBuilder.insertContentValues(entity);
+            L.d("Insert operation "+DbUtil.getTableName(entity));
+            L.d("Values "+contentValues.toString());
             long rowId = getWritableDatabase().insert
-                    (DbUtil.getTableName(entity), null, QueryBuilder.insertContentValues(entity));
+                    (DbUtil.getTableName(entity), null, contentValues);
+            L.d("RowId created "+rowId);
             if (rowId < 0) return; //The row insertion was a failure;
             findAndSetByReferenceByRowId(entity, rowId); //if successfull return corresponding Entity.
             AnnotationUtils.executeAnnotationFunction(entity, AfterCreate.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("Error while insertion entity "+entity.getClass().getSimpleName());
+            L.e(e.getLocalizedMessage());
         }
     }
 
 
 
     private int removeMapping(String tableName,String aColumn,long aValue){
+        L.v("Flushing mapping in table "+tableName+" for column "+aColumn+" with value "+aValue);
         return getWritableDatabase().delete(tableName,
                 aColumn + " = ?",new String[] { String.valueOf(aValue) });
     }
@@ -384,6 +425,8 @@ public class DBExecutor extends SQLiteOpenHelper {
             ContentValues contentValues = new ContentValues();
             contentValues.put(aColumnName,aValue);
             contentValues.put(bColumnName,bValue);
+            L.v("Adding mapping row in table "+tableName+" for column "+aColumnName+" with value "+aValue+
+                        " and for column "+bColumnName+" with value "+bValue);
             getWritableDatabase().insert(tableName,null,contentValues);
         } catch (Exception e) {
             e.printStackTrace();
@@ -462,6 +505,7 @@ public class DBExecutor extends SQLiteOpenHelper {
                     o.getClass().getAnnotation(com.basilgregory.onam.annotations.DB.class);
             if (dbAnnotation == null) return;
             if (!isThisNewVersionOfDb(context,dbAnnotation)) return;
+            L.d("New version/fresh database found");
 
             ArrayList<Class> curatedTablesList = new ArrayList<>();//Curating list for table creation.
             for (Class table:dbAnnotation.tables()){
@@ -508,7 +552,8 @@ public class DBExecutor extends SQLiteOpenHelper {
 
             setCurrentVersion(context,dbAnnotation);
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("Error in database management");
+            L.e(e.getLocalizedMessage());
         }
     }
 
@@ -519,10 +564,12 @@ public class DBExecutor extends SQLiteOpenHelper {
             DbMetaData dbMetaData = storage.getCurrentDbMeta(dbName);
             for (String tableName : dmls.keySet()) {
                 try {
+                    L.d("SQL : "+dmls.get(tableName));
                     getWritableDatabase().execSQL(dmls.get(tableName));
                     dbMetaData.tableNames.remove(tableName);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    L.w("Error while table drop");
+                    L.e(e.getLocalizedMessage());
                 }
             }
             getWritableDatabase().setTransactionSuccessful();
@@ -539,9 +586,11 @@ public class DBExecutor extends SQLiteOpenHelper {
         getWritableDatabase().beginTransaction();
         for (String tableName : dmls.keySet()) {
             try {
+                L.d("SQL : "+dmls.get(tableName));
                 getWritableDatabase().execSQL(dmls.get(tableName));
             } catch (Exception e) {
-                e.printStackTrace();
+                L.w("Error while table update");
+                L.e(e.getLocalizedMessage());
             }
         }
         getWritableDatabase().setTransactionSuccessful();
@@ -557,6 +606,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             DbMetaData dbMetaData = storage.getCurrentDbMeta(dbName);
             for (String tableName : ddls.keySet()) {
                 try {
+                    L.d("SQL : "+ddls.get(tableName));
                     getWritableDatabase().execSQL(ddls.get(tableName));
                     dbMetaData.tableNames.add(tableName); //Here after execution it can be certain that the table creation was successful.
                 } catch (Exception e) {
@@ -566,7 +616,8 @@ public class DBExecutor extends SQLiteOpenHelper {
             getWritableDatabase().setTransactionSuccessful();
             storage.storeCurrentDbMeta(dbName,dbMetaData);
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("Error while table creation");
+            L.e(e.getLocalizedMessage());
         }finally {
             getWritableDatabase().endTransaction();
         }

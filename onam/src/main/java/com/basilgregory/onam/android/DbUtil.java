@@ -143,9 +143,11 @@ public class DbUtil {
         try {
             return getter.getDeclaringClass().getMethod(getter.getName().replaceFirst("get", "set"), getter.getReturnType());
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            L.w("Finding setter function from getter "+getter.getName()+" failed ");
+            L.e("Finding setter failed "+e.getLocalizedMessage());
         }catch (Exception e) {
-            e.printStackTrace();
+            L.w("Finding setter function from getter "+getter.getName()+" failed ");
+            L.e("Finding setter failed "+e.getLocalizedMessage());
         }
         return null;
     }
@@ -162,7 +164,8 @@ public class DbUtil {
             if (method == null) return null;
             return method.invoke(entity);
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("invoking getter "+field.getName()+" failed in entity "+entity.getClass().getSimpleName());
+            L.e("invoking getter failed "+e.getLocalizedMessage());
         }
         return null;
     }
@@ -176,10 +179,12 @@ public class DbUtil {
      */
     static Object invokeSetterForList(Entity entity,Method setterMethod, Object parameter) {
         try {
+            L.v("invoking setter "+setterMethod.getName()+" in entity "+entity.getClass().getSimpleName());
             if (setterMethod == null) return null;
             return setterMethod.invoke(entity,parameter);
         } catch (Exception e) {
-            e.printStackTrace();
+            L.w("invoking setter "+setterMethod.getName()+" failed in entity "+entity.getClass().getSimpleName());
+            L.e("invoking setter failed "+e.getLocalizedMessage());
         }
         return null;
     }
@@ -214,9 +219,9 @@ public class DbUtil {
             if (field.getType().getAnnotation(Table.class) == null) //Field is not a related Entity but is an attribute.
                 return FieldType.adjustedValueOf(field.getType().getSimpleName().toUpperCase()).getDataType();
         } catch (IllegalArgumentException e) {
-            L.InternalLogger.w("Field type is not a match with the database types (possibly a LIST) " +
+            L.vi("Field type is not a match with the database types (possibly a LIST) " +
                     "-- DbUtil.findType("+field.getName()+")");
-            L.InternalLogger.d(e.getLocalizedMessage());
+            L.vi(e.getLocalizedMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
