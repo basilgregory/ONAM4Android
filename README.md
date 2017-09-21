@@ -39,6 +39,9 @@ You need to call init() function in your launcher Activity onCreate().
 Entity.init(this);
 ```
 
+More on init function [Activate Logs using init()](https://github.com/basilgregory/ONAM4Android/wiki/Logs)
+
+
 You need to specify the Entity classes using @DB annotation along with name and version of your database, in the same launcher Activity.
 
 ```
