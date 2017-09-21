@@ -22,7 +22,7 @@ repositories {
 And
 ```
 dependencies {
-    compile 'com.github.basilgregory:ONAM4Android:master-SNAPSHOT'
+    compile 'com.github.basilgregory:ONAM4Android:1.0'
 }
 ```
 
