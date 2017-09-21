@@ -14,6 +14,7 @@ public class L {
         warning = true;
         error = true;
         verbose = false;
+        verboseInternal = false;
         debug = false;
     }
 
@@ -21,7 +22,7 @@ public class L {
         return lInstance == null ? new L() : lInstance;
     }
 
-    private static boolean verbose, debug, warning, error;
+    private static boolean verbose, debug, warning, error, verboseInternal;
 
     public static void setDebug(boolean debug) {
         L.debug = debug;
@@ -31,11 +32,12 @@ public class L {
         verbose = verboseValue;
     }
 
-
-
+    public static void setVerboseInternal(boolean verboseInternal) {
+        L.verboseInternal = verboseInternal;
+    }
 
     static void vi(String message){
-        if (!verbose) return;
+        if (!verboseInternal) return;
         Log.d("ONAM/internal",message);
     }
     static void v(String message){
