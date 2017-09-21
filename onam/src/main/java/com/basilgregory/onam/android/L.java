@@ -18,22 +18,22 @@ public class L {
         debug = false;
     }
 
-    public static L getInstance() {
+    static L getInstance() {
         return lInstance == null ? new L() : lInstance;
     }
 
     private static boolean verbose, debug, warning, error, verboseInternal;
 
-    public static void setDebug(boolean debug) {
-        L.debug = debug;
+    void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
-    public void setVerbose(boolean verboseValue) {
-        verbose = verboseValue;
+    void setVerbose(boolean verbose) {
+        this.verbose = verbose;
     }
 
-    public static void setVerboseInternal(boolean verboseInternal) {
-        L.verboseInternal = verboseInternal;
+    void setVerboseInternal(boolean verboseInternal) {
+        this.verboseInternal = verboseInternal;
     }
 
     static void vi(String message){

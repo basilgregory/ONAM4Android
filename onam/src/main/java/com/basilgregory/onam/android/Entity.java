@@ -113,7 +113,16 @@ public abstract class Entity implements Serializable{
      */
     public static void init(Activity activityObject){
         DBExecutor.init(activityObject.getApplicationContext(),activityObject);
+    }
 
+    public static void init(Activity activityObject,boolean debug){
+        L.getInstance().setDebug(debug);
+        init(activityObject);
+    }
+
+    public static void init(Activity activityObject,boolean debug,boolean verbose){
+        L.getInstance().setVerbose(verbose);
+        init(activityObject, debug);
     }
 
     /**
