@@ -6,6 +6,10 @@ package com.basilgregory.onam.android;
 
 import android.app.Activity;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -212,4 +216,35 @@ public abstract class Entity implements Serializable{
         return (List<E>) DBExecutor.getInstance().findAllWithOrderBy(entityClass,whereClause,orderByColumn,descending,startIndex,pageSize);
     }
 
+    public JSONObject toJSON(){
+        return JSONParser.toJsonObject(this);
+    }
+
+    public static void fromJSON(JSONObject json,Class rootEntity){
+        try {
+            JSONParser.fromJsonObject(json,rootEntity);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void fromJSON(JSONArray jsonArray,Class rootEntity){
+        try {
+            JSONParser.fromJsonArray(jsonArray,rootEntity);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

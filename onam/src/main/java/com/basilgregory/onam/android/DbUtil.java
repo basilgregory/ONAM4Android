@@ -177,7 +177,7 @@ public class DbUtil {
      * @param parameter -- parameter for setter method. Only one parameter expected.
      * @return -- returns NULL if the setter method with the single parameter does not exists, else returns response from executing setter method if any
      */
-    static Object invokeSetterForList(Entity entity,Method setterMethod, Object parameter) {
+    static Object invokeSetter(Entity entity, Method setterMethod, Object parameter) {
         try {
             L.v("invoking setter "+setterMethod.getName()+" in entity "+entity.getClass().getSimpleName());
             if (setterMethod == null) return null;

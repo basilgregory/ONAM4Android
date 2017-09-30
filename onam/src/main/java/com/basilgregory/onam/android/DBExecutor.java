@@ -81,7 +81,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         if (foreignKey == null || foreignKey < 1) return null;
         Entity relatedEntity = findById((Class<Entity>) method.getReturnType(), foreignKey);
         L.v("fetching related entity "+method.getReturnType().getSimpleName() + "with id "+foreignKey);
-        DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),relatedEntity);
+        DbUtil.invokeSetter(entity,DbUtil.getSetterMethod(method),relatedEntity);
         return relatedEntity;
     }
 
@@ -153,7 +153,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         Class collectionType = holderClass.getClass().getSuperclass();
         List<Entity> entities = findByProperty(collectionType,
                 DbUtil.getReferencedColumnName(oneToMany,entity.getClass()),entity.getId(),null,null);
-        DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),entities);
+        DbUtil.invokeSetter(entity,DbUtil.getSetterMethod(method),entities);
         return entities;
 
     }
@@ -171,7 +171,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         Cursor cursor =  findByProperty(manyToMany.tableName(),
                 getMappingForeignColumnNameClass(entity.getClass()),entity.getId(),null,null);
         List<Entity> entities  = EntityBuilder.getEntityFromMappingTable(cursor,holderClass.getClass().getSuperclass());
-        DbUtil.invokeSetterForList(entity,DbUtil.getSetterMethod(method),entities);
+        DbUtil.invokeSetter(entity,DbUtil.getSetterMethod(method),entities);
         return entities;
     }
 
