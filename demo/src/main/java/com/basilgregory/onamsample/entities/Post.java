@@ -51,7 +51,7 @@ public class Post extends Entity {
         this.created_at = created_at;
     }
 
-    @OneToMany(referencedColumnName = "post_id")
+    @OneToMany(referencedColumnName = "post_id", targetEntity = Comment.class)
     public List<Comment> getComments() {
         return fetch(this.comments,new Comment(){});
     }

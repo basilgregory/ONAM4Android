@@ -46,6 +46,8 @@ public class AllPostsActivity extends AppCompatActivity {
         Entity.init(this, true, false);
         registerUser();
         connectViews();
+
+
     }
 
     /**
@@ -108,6 +110,7 @@ public class AllPostsActivity extends AppCompatActivity {
 
     private void fetchAllPosts(){
         postList =  Post.findAll(Post.class,null,null);
+
     }
 
 

@@ -36,7 +36,7 @@ public class User extends Entity {
         this.bio = bio;
     }
 
-    @OneToMany
+    @OneToMany(targetEntity = Comment.class)
     public List<Post> getPosts() {
         return fetch(this.posts,new Post(){});
     }
@@ -45,7 +45,7 @@ public class User extends Entity {
         this.posts = posts;
     }
 
-    @OneToMany(referencedColumnName = "creator_id")
+    @OneToMany(referencedColumnName = "creator_id", targetEntity = Comment.class)
     public List<Comment> getComments() {
         return fetch(this.comments,new Comment(){});
     }
