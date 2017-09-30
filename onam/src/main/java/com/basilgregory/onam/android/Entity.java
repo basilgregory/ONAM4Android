@@ -220,9 +220,9 @@ public abstract class Entity implements Serializable{
         return JSONParser.toJsonObject(this);
     }
 
-    public static void fromJSON(JSONObject json,Class rootEntity){
+    public static Entity fromJSON(JSONObject json,Class rootEntity){
         try {
-            JSONParser.fromJsonObject(json,rootEntity);
+            return JSONParser.fromJsonObject(json,rootEntity);
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -232,11 +232,12 @@ public abstract class Entity implements Serializable{
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    public static void fromJSON(JSONArray jsonArray,Class rootEntity){
+    public static List<Entity> fromJSON(JSONArray jsonArray,Class rootEntity){
         try {
-            JSONParser.fromJsonArray(jsonArray,rootEntity);
+            return JSONParser.fromJsonArray(jsonArray,rootEntity);
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -246,5 +247,6 @@ public abstract class Entity implements Serializable{
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 }
