@@ -201,7 +201,7 @@ Post has ManyToOne mapping with User (as owner of post)
 **Post** has OneToMany mapping with **Comment**  
 For OneToMany mapping a foreignkey for **Post** entity is needed in **Comment** table, you may suggest a foreign key column name.
 ```
-    @OneToMany(referencedColumnName = "post_id")
+    @OneToMany(referencedColumnName = "post_id", targetEntity = Comment.class)
     public List<Comment> getComments() {
         return fetch(this.comments,new Comment(){});
     }
@@ -231,7 +231,7 @@ For ManyToOne mapping a foreignkey for **User** entity is needed at **Post** tab
 Here a foreign key column named *user_id* will be created automatically, as no explicit name is provided in **Post** table.  
 Similarly, **User** entity has
 ```
-    @OneToMany
+    @OneToMany(targetEntity = Post.class)
     public List<Post> getPosts() {
         return fetch(this.posts,new Post(){});
     }
