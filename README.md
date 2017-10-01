@@ -201,7 +201,7 @@ Post has ManyToOne mapping with User (as owner of post)
 **Post** has OneToMany mapping with **Comment**  
 For OneToMany mapping a foreignkey for **Post** entity is needed in **Comment** table, you may suggest a foreign key column name.
 ```
-    @OneToMany(referencedColumnName = "post_id")
+    @OneToMany(referencedColumnName = "post_id", targetEntity = Comment.class)
     public List<Comment> getComments() {
         return fetch(this.comments,new Comment(){});
     }
@@ -231,7 +231,7 @@ For ManyToOne mapping a foreignkey for **User** entity is needed at **Post** tab
 Here a foreign key column named *user_id* will be created automatically, as no explicit name is provided in **Post** table.  
 Similarly, **User** entity has
 ```
-    @OneToMany
+    @OneToMany(targetEntity = Post.class)
     public List<Post> getPosts() {
         return fetch(this.posts,new Post(){});
     }
@@ -242,7 +242,7 @@ In short, if you are providing a @Column name to @ManyToOne mapping then the sam
 **Post** has ManyToMany mapping with **User** entity (as followers of post), we need a mapping table with name '*user_followers*' and the mapping to be done with **User** enitity 
 
 ```
-    @ManyToMany(tableName = "user_followers", 
+    @ManyToMany(tableName = "post_followers", 
             targetEntity = User.class)
     public List<User> getFollowers() {
         return fetch(this.followers,new User(){});
@@ -250,7 +250,7 @@ In short, if you are providing a @Column name to @ManyToOne mapping then the sam
 ```
 Correspondingly in **User** entity, the tableName should be same.
 ```
-    @ManyToMany(tableName = "user_followers", 
+    @ManyToMany(tableName = "post_followers", 
             targetEntity = Post.class)
     public List<Post> getFollowedPosts() {
         return fetch(this.followedPosts,new Post(){});
