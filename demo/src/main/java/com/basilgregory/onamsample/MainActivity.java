@@ -24,13 +24,13 @@ public class MainActivity extends AppCompatActivity {
         Post post = new Post();
         post.setTitle("First POST");
         post.setPost("this is my first ever post used");
-        post.setCreated_at(System.currentTimeMillis());
+        post.setCreatedAt(System.currentTimeMillis());
         post.setUser(user);
 
         //Adding a comment
         Comment comment = new Comment();
         comment.setComment("This is the first comment");
-        comment.setCreated_at(System.currentTimeMillis());
+        comment.setCreatedAt(System.currentTimeMillis());
         comment.setPost(post);
         comment.setUser(user);
 

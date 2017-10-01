@@ -20,7 +20,7 @@ public class Post extends Entity {
     private transient String transientPost;
 
 
-    private long created_at;
+    private long createdAt;
 
     private List<User> followers;
 
@@ -43,12 +43,12 @@ public class Post extends Entity {
         this.post = post;
     }
 
-    public long getCreated_at() {
-        return created_at;
+    public long getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(long created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
     @OneToMany(referencedColumnName = "post_id", targetEntity = Comment.class)
@@ -69,7 +69,7 @@ public class Post extends Entity {
         this.user = user;
     }
 
-    @ManyToMany(tableName = "user_followers", targetEntity = User.class)
+    @ManyToMany(tableName = "post_followers", targetEntity = User.class)
     public List<User> getFollowers() {
         return fetch(this.followers,new User(){});
     }

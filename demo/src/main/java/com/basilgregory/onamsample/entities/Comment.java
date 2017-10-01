@@ -13,7 +13,7 @@ import com.basilgregory.onam.android.Entity;
 @Table
 public class Comment extends Entity {
     private String comment;
-    private long created_at;
+    private long createdAt;
 
     private Post post;
     private User user;
@@ -27,12 +27,12 @@ public class Comment extends Entity {
         this.comment = comment;
     }
 
-    public long getCreated_at() {
-        return created_at;
+    public long getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(long created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
     @ManyToOne
@@ -61,7 +61,7 @@ public class Comment extends Entity {
      */
     @BeforeCreate
     public void settingTimeStamps(){
-        created_at = System.currentTimeMillis();
+        createdAt = System.currentTimeMillis();
     }
 
     /**

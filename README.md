@@ -91,7 +91,7 @@ Now add columns as class fields.
 public class Post extends Entity {
     private String title;
     private String post;
-    private long created_at;
+    private long createdAt;
     private List<User> followers;
     private List<Comment> comments;
     private User user;

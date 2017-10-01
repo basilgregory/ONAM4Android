@@ -54,7 +54,7 @@ public class User extends Entity {
         this.comments = comments;
     }
 
-    @ManyToMany(tableName = "user_followers", targetEntity = Post.class)
+    @ManyToMany(tableName = "post_followers", targetEntity = Post.class)
     public List<Post> getFollowedPosts() {
         return fetch(this.followedPosts,new Post(){});
     }

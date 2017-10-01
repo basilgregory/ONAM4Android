@@ -64,7 +64,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         // - replace the contents of the view with that element
         holder.comment.setText(comments.get(position).getComment());
         Calendar calendar  = Calendar.getInstance();
-        calendar.setTimeInMillis(comments.get(position).getCreated_at());
+        calendar.setTimeInMillis(comments.get(position).getCreatedAt());
         SimpleDateFormat format = new SimpleDateFormat("MMM, dd hh:mm a");
         String formatedDate = format.format(calendar.getTime());
         holder.commentedAt.setText(formatedDate);
