@@ -36,7 +36,7 @@ public class User extends Entity {
         this.bio = bio;
     }
 
-    @OneToMany(targetEntity = Comment.class)
+    @OneToMany(targetEntity = Post.class)
     public List<Post> getPosts() {
         return fetch(this.posts,new Post(){});
     }
