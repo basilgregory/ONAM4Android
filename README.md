@@ -91,7 +91,7 @@ Now add columns as class fields.
 public class Post extends Entity {
     private String title;
     private String post;
-    private long created_at;
+    private long createdAt;
     private List<User> followers;
     private List<Comment> comments;
     private User user;
@@ -242,7 +242,7 @@ In short, if you are providing a @Column name to @ManyToOne mapping then the sam
 **Post** has ManyToMany mapping with **User** entity (as followers of post), we need a mapping table with name '*user_followers*' and the mapping to be done with **User** enitity 
 
 ```
-    @ManyToMany(tableName = "user_followers", 
+    @ManyToMany(tableName = "post_followers", 
             targetEntity = User.class)
     public List<User> getFollowers() {
         return fetch(this.followers,new User(){});
@@ -250,7 +250,7 @@ In short, if you are providing a @Column name to @ManyToOne mapping then the sam
 ```
 Correspondingly in **User** entity, the tableName should be same.
 ```
-    @ManyToMany(tableName = "user_followers", 
+    @ManyToMany(tableName = "post_followers", 
             targetEntity = Post.class)
     public List<Post> getFollowedPosts() {
         return fetch(this.followedPosts,new Post(){});
