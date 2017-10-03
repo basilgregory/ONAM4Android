@@ -115,18 +115,18 @@ public abstract class Entity implements Serializable{
      *
      * @param activityObject - Current class object or preferably Acitivty object (ex. Activity.this).
      */
-    public static void init(Activity activityObject){
-        DBExecutor.init(activityObject.getApplicationContext(),activityObject);
+    public static void init(Activity activityObject, Object classWithDBAnnotation){
+        DBExecutor.init(activityObject.getApplicationContext(),classWithDBAnnotation);
     }
 
-    public static void init(Activity activityObject,boolean debug){
+    public static void init(Activity activityObject, Object classWithDBAnnotation,boolean debug){
         L.getInstance().setDebug(debug);
-        init(activityObject);
+        init(activityObject,classWithDBAnnotation);
     }
 
-    public static void init(Activity activityObject,boolean debug,boolean verbose){
+    public static void init(Activity activityObject, Object classWithDBAnnotation,boolean debug,boolean verbose){
         L.getInstance().setVerbose(verbose);
-        init(activityObject, debug);
+        init(activityObject, classWithDBAnnotation, debug);
     }
 
     /**
