@@ -220,6 +220,10 @@ public abstract class Entity implements Serializable{
         return JSONParser.toJsonObject(this);
     }
 
+    public JSONArray toJSONArray(List<Entity> entities){
+        return JSONParser.toJsonArray(entities);
+    }
+
     public static Entity fromJSON(JSONObject json,Class rootEntity){
         try {
             return JSONParser.fromJsonObject(json,rootEntity);
