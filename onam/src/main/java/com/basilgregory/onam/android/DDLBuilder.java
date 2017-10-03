@@ -49,7 +49,7 @@ public class DDLBuilder {
         for (Field field:fields) {
             if (Modifier.isTransient(field.getModifiers())) continue; //Transient field are to be omitted from creation.
             String fieldType = DbUtil.findType(field);
-            if (fieldType != null) ddlCreate.append(field.getName().toLowerCase()).append(" ").append(fieldType);
+            if (fieldType != null) ddlCreate.append(DbUtil.getColumnName(field).toLowerCase()).append(" ").append(fieldType);
             else {
                 Method getterMethod = DbUtil.getMethod("get",field);
                 if (getterMethod.getAnnotation(OneToMany.class) == null &&

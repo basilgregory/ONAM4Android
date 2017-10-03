@@ -88,7 +88,8 @@ public class DMLBuilder {
                 try {
                     String expectedColumnNameForField = DbUtil.getColumnName(field);
                     if (expectedColumnNameForField == null) continue;
-                    if (!expectedColumnNameForField.toLowerCase().equals(existingtableColumn.toLowerCase())) continue;
+                    if (!expectedColumnNameForField.toLowerCase()
+                            .trim().equals(existingtableColumn.toLowerCase().trim())) continue;
                     fieldAlreadyInDb = true;
                     break;
                 } catch (Exception e) {
@@ -99,7 +100,7 @@ public class DMLBuilder {
             StringBuffer addColumnDml = new StringBuffer("ALTER TABLE ")
                     .append(DbUtil.getTableName(newTableClass)).append(" ADD COLUMN ");
             String fieldType = DbUtil.findType(field);
-            if (fieldType != null) addColumnDml.append(field.getName().toLowerCase()).append(" ").append(fieldType);
+            if (fieldType != null) addColumnDml.append(DbUtil.getColumnName(field).toLowerCase()).append(" ").append(fieldType);
             else {
                 Method getterMethod = DbUtil.getMethod("get",field);
                 if (getterMethod.getAnnotation(OneToMany.class) == null &&
