@@ -100,7 +100,8 @@ public class DMLBuilder {
             StringBuffer addColumnDml = new StringBuffer("ALTER TABLE ")
                     .append(DbUtil.getTableName(newTableClass)).append(" ADD COLUMN ");
             String fieldType = DbUtil.findType(field);
-            if (fieldType != null) addColumnDml.append(DbUtil.getColumnName(field).toLowerCase()).append(" ").append(fieldType);
+            String columnName = DbUtil.getColumnName(field);
+            if (fieldType != null && columnName != null) addColumnDml.append(columnName.toLowerCase()).append(" ").append(fieldType);
             else {
                 Method getterMethod = DbUtil.getMethod("get",field);
                 if (getterMethod.getAnnotation(OneToMany.class) == null &&
