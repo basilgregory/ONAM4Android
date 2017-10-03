@@ -37,23 +37,23 @@ public class L {
     }
 
     static void vi(String message){
-        if (!verboseInternal) return;
+        if (!verboseInternal && message != null && !message.isEmpty()) return;
         Log.d("ONAM/internal",message);
     }
     static void v(String message){
-        if (!verbose) return;
+        if (!verbose && message != null && !message.isEmpty()) return;
         Log.d("ONAM/verbose",message);
     }
     static void d(String message){
-        if (!debug) return;
+        if (!debug && message != null && !message.isEmpty()) return;
         Log.d("ONAM/debug",message);
     }
     static void w(String message){
-        if (!warning) return;
+        if (!warning && message != null && !message.isEmpty()) return;
         Log.d("ONAM/warning",message);
     }
     static void e(String message){
-        if (!error) return;
+        if (!error && message != null && !message.isEmpty()) return;
         Log.d("ONAM/error",message);
     }
 }
