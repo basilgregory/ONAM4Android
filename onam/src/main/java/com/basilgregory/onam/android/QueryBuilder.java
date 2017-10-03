@@ -82,9 +82,11 @@ public class QueryBuilder {
             try {
                 if (Modifier.isTransient(field.getModifiers())) continue; //Transient field are already omitted from database.
                 if (field.getType().getAnnotation(Table.class) != null) {
+                    String columnName = DbUtil.getColumnName(field);
+                    if (columnName == null) continue;
                     Object relatedEntity = DbUtil.invokeGetter(field,entity);
                     if (relatedEntity == null) continue;
-                    contentValues.put(DbUtil.getColumnName(field), ((Entity) relatedEntity).getId());
+                    contentValues.put(columnName, ((Entity) relatedEntity).getId());
                 }else FieldType.addValues(contentValues,field, invokeGetter(field,entity));
             } catch (Exception e) {
                 e.printStackTrace();

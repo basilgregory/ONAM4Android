@@ -49,54 +49,55 @@ public enum FieldType {
 
     static void addValues(ContentValues contentValues, Field field, Object returnValue) throws Exception {
         if (returnValue != null) {
+            String columnName = DbUtil.getColumnName(field);
             switch (field.getType().getSimpleName().toUpperCase()) {
                 case "INT":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (int) returnValue);
                     break;
                 case "INTEGER":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (int) returnValue);
                     break;
                 case "LONG":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (long) returnValue);
                     break;
                 case "SHORT":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (short) returnValue);
                     break;
                 case "BYTE":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (byte) returnValue);
                     break;
                 case "BOOLEAN":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (boolean) returnValue);
                     break;
                 case "BIGINTEGER":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (long) returnValue);
                     break;
                 case "BIGDECIMAL":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (double) returnValue);
                     break;
                 case "FLOAT":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (float) returnValue);
                     break;
                 case "DOUBLE":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (double) returnValue);
                     break;
                 case "BYTE[]":
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (byte[]) returnValue);
                     break;
 
                 default:
-                    contentValues.put(field.getName(),
+                    contentValues.put(columnName,
                             (String) returnValue);
                     break;
             }
