@@ -104,7 +104,7 @@ public class DMLBuilder {
             if (fieldType != null && columnName != null) addColumnDml.append(columnName.toLowerCase()).append(" ").append(fieldType);
             else {
                 Method getterMethod = DbUtil.getMethod("get",field);
-                if (getterMethod.getAnnotation(OneToMany.class) == null &&
+                if (getterMethod != null && getterMethod.getAnnotation(OneToMany.class) == null &&
                         getterMethod.getAnnotation(ManyToMany.class) == null) DbUtil.generateForeignColumnName(addColumnDml,field);
                 else continue;
             }
