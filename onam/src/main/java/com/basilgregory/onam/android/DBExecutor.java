@@ -553,7 +553,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             setCurrentVersion(context,dbAnnotation);
         } catch (Exception e) {
             L.w("Error in database management");
-            L.e(e.getLocalizedMessage());
+            L.e(e.toString());
         }
     }
 
