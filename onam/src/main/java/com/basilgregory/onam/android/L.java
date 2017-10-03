@@ -56,4 +56,8 @@ public class L {
         if (!error || message == null || message.isEmpty()) return;
         Log.d("ONAM/error",""+message);
     }
+    static void e(Exception e){
+        if (!error || e == null) return;
+        e.printStackTrace();
+    }
 }
