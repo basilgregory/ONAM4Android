@@ -38,22 +38,22 @@ public class L {
 
     static void vi(String message){
         if (!verboseInternal && message != null && !message.isEmpty()) return;
-        Log.d("ONAM/internal",message);
+        Log.d("ONAM/internal",""+message);
     }
     static void v(String message){
         if (!verbose && message != null && !message.isEmpty()) return;
-        Log.d("ONAM/verbose",message);
+        Log.d("ONAM/verbose",""+message);
     }
     static void d(String message){
         if (!debug && message != null && !message.isEmpty()) return;
-        Log.d("ONAM/debug",message);
+        Log.d("ONAM/debug",""+message);
     }
     static void w(String message){
         if (!warning && message != null && !message.isEmpty()) return;
-        Log.d("ONAM/warning",message);
+        Log.d("ONAM/warning",""+message);
     }
     static void e(String message){
         if (!error && message != null && !message.isEmpty()) return;
-        Log.d("ONAM/error",message);
+        Log.d("ONAM/error",""+message);
     }
 }
