@@ -43,7 +43,7 @@ public class AllPostsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_all_posts);
 
         //This init should be called in the activity #{onCreate} where you have #{DB} annotation added.
-        Entity.init(this, true, false);
+        Entity.init(this,this, true, false);
         registerUser();
         connectViews();
 
