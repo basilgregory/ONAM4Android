@@ -75,7 +75,7 @@ public class QueryBuilder {
     }
 
 
-    static ContentValues insertContentValues(Entity entity){
+    static ContentValues insertContentValues(Entity entity, Entity parentEntity){
         ContentValues contentValues = new ContentValues();
         Field[] fields = entity.getClass().getDeclaredFields();
         for (Field field: fields) {
@@ -85,8 +85,10 @@ public class QueryBuilder {
                     String columnName = DbUtil.getColumnName(field);
                     if (columnName == null) continue;
                     Object relatedEntity = DbUtil.invokeGetter(field,entity);
-                    if (relatedEntity == null) continue;
-                    contentValues.put(columnName, ((Entity) relatedEntity).getId());
+                    if (relatedEntity != null)
+                        contentValues.put(columnName, ((Entity) relatedEntity).getId());
+                    else if(parentEntity != null)
+                        contentValues.put(columnName, parentEntity.getId());
                 }else FieldType.addValues(contentValues,field, invokeGetter(field,entity));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -95,16 +97,20 @@ public class QueryBuilder {
         return contentValues;
     }
 
-    static ContentValues insertConflictContentValues(Entity entity,Entity currentEntityInDB){
+    static ContentValues insertConflictContentValues(Entity entity,Entity currentEntityInDB, Entity parentEntity){
         ContentValues contentValues = new ContentValues();
         Field[] fields = entity.getClass().getDeclaredFields();
         for (Field field: fields) {
             try {
                 if (Modifier.isTransient(field.getModifiers())) continue; //Transient field are already omitted from database.
                 if (field.getType().getAnnotation(Table.class) != null) {
+                    String columnName = DbUtil.getColumnName(field);
+                    if (columnName == null) continue;
                     Object relatedEntity = DbUtil.invokeGetter(field,entity);
-                    if (relatedEntity == null) continue;
-                    contentValues.put(DbUtil.getColumnName(field), ((Entity) relatedEntity).getId());
+                    if (relatedEntity != null)
+                        contentValues.put(columnName, ((Entity) relatedEntity).getId());
+                    else if(parentEntity != null)
+                        contentValues.put(columnName, parentEntity.getId());
                 }else{
                     Object newReturnValue = invokeGetter(field,entity);
                     Object currentReturnValue = invokeGetter(field,currentEntityInDB);

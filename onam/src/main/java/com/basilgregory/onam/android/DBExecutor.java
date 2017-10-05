@@ -313,8 +313,27 @@ public class DBExecutor extends SQLiteOpenHelper {
     private Entity insertOrUpdateEntity(Entity entity) {
         try {
             lookForRelatedObjects(entity);
-            if (entity.getId() > 0) executeUpdate(entity);
-            else executeInsert(entity);
+            if (entity.getId() > 0) executeUpdate(entity, null);
+            else executeInsert(entity, null);
+        } catch (Exception e) {
+            L.w("Error while saving entity "+entity.getClass().getSimpleName());
+            L.e(e.getLocalizedMessage());
+        } finally {
+            return entity;
+        }
+    }
+
+    /**
+     * To be used only for many mapping.
+     * This will not look for related entities.
+     * @param entity  Entity to be saved
+     * @param parentEntity Parent Entity incase of many mapping.
+     * @return
+     */
+    private Entity insertOrUpdateEntity(Entity entity,Entity parentEntity) {
+        try {
+            if (entity.getId() > 0) executeUpdate(entity, parentEntity);
+            else executeInsert(entity, parentEntity);
         } catch (Exception e) {
             L.w("Error while saving entity "+entity.getClass().getSimpleName());
             L.e(e.getLocalizedMessage());
@@ -361,7 +380,15 @@ public class DBExecutor extends SQLiteOpenHelper {
         L.vi("Looking for related entities for "+entity.getClass().getSimpleName());
         Field[] fields = entity.getClass().getDeclaredFields();
         for (Field field : fields) {
-            if (field.getType().getAnnotation(Table.class) != null) {
+            Method getterMethod = DbUtil.getMethod("get",field);
+            if (field.getType().getAnnotation(Table.class) == null &&
+                    getterMethod.getAnnotation(OneToMany.class) == null ) continue;
+            if (getterMethod.getAnnotation(OneToMany.class) != null ){ //Returns a list.
+                if (entity.getId() < 1) executeInsert(entity, null); // Parent entity id required for many mapping.
+                List<Entity> relatedEntities = (List<Entity>) DbUtil.invokeGetter(field, entity);
+                for (Entity relatedEntity: relatedEntities )
+                    if (relatedEntity != null) insertOrUpdateEntity(relatedEntity, entity);
+            }else{
                 Object relatedObject = DbUtil.invokeGetter(field, entity);
                 if (relatedObject != null && relatedObject instanceof Entity)
                     insertOrUpdateEntity((Entity) relatedObject);
@@ -370,11 +397,11 @@ public class DBExecutor extends SQLiteOpenHelper {
     }
 
 
-    private void executeUpdate(Entity entity) {
+    private void executeUpdate(Entity entity, Entity parentEntity) {
         try {
             AnnotationUtils.executeAnnotationFunction(entity, BeforeUpdate.class);
             ContentValues contentValues = QueryBuilder.insertConflictContentValues(entity,
-                    findById((Class<Entity>) entity.getClass(), entity.getId()));
+                    findById((Class<Entity>) entity.getClass(), entity.getId()), parentEntity);
             if (contentValues.size() < 1) return;
             L.d("Update operation "+DbUtil.getTableName(entity));
             L.d("Update entity row with id "+String.valueOf(entity.getId()));
@@ -393,10 +420,10 @@ public class DBExecutor extends SQLiteOpenHelper {
     }
 
 
-    private void executeInsert(Entity entity) {
+    private void executeInsert(Entity entity, Entity parentEntity) {
         try {
             AnnotationUtils.executeAnnotationFunction(entity, BeforeCreate.class);
-            ContentValues contentValues = QueryBuilder.insertContentValues(entity);
+            ContentValues contentValues = QueryBuilder.insertContentValues(entity, parentEntity);
             L.d("Insert operation "+DbUtil.getTableName(entity));
             L.d("Values "+contentValues.toString());
             long rowId = getWritableDatabase().insert
