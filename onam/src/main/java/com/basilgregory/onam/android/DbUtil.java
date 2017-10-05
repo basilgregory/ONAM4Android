@@ -88,6 +88,10 @@ public class DbUtil {
 
     }
 
+    static boolean isGetter(Method method){
+        if (method == null) return false;
+        return method.getName().toLowerCase().startsWith("get");
+    }
     static  Method getMethod (String prefix, Field field) {
         if (field == null) return null;
         String name = prefix + field.getName();
@@ -165,6 +169,17 @@ public class DbUtil {
             return method.invoke(entity);
         } catch (Exception e) {
             L.w("invoking getter "+field.getName()+" failed in entity "+entity.getClass().getSimpleName());
+            L.e("invoking getter failed "+e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    static Object invokeGetter(Method getter, Object entity){
+        try {
+            if (getter == null) return null;
+            return getter.invoke(entity);
+        } catch (Exception e) {
+            L.w("invoking getter "+getter.getName()+" failed in entity "+entity.getClass().getSimpleName());
             L.e("invoking getter failed "+e.getLocalizedMessage());
         }
         return null;

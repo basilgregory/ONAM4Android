@@ -217,11 +217,15 @@ public abstract class Entity implements Serializable{
     }
 
     public JSONObject toJSON(){
-        return JSONParser.toJsonObject(this);
+        return toJSON(this);
     }
 
-    public static JSONArray toJSONArray(List<Entity> entities){
-        return JSONParser.toJsonArray(entities);
+    public static JSONObject toJSON(Object object){
+        return JSONParser.toJsonObject(object);
+    }
+
+    public static JSONArray toJSONArray(List<Object> objects){
+        return JSONParser.toJsonArray(objects);
     }
 
     public static Entity fromJSON(JSONObject json,Class rootEntity){
