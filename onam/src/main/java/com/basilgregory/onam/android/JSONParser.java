@@ -18,7 +18,15 @@ import java.util.List;
  * Created by donpeter on 9/26/17.
  */
 
-public class JSONParser {
+class JSONParser {
+
+    /**
+     * All @JSON methods
+     * For delegate mandatory provide @JSON fieldname.
+     * @JSON fieldname.isempty = fieldname.
+     *
+     */
+
     /**
      * Converts only primitive fields.
      * Convertion restricted to one layer.
@@ -27,15 +35,14 @@ public class JSONParser {
      */
     public static JSONObject toJsonObject(Object entity){
         if (entity == null) return null;
-        Method[] methods = entity.getClass().getDeclaredMethods();
         JSONObject jsonObject = new JSONObject();
+        Method[] methods = entity.getClass().getDeclaredMethods();
         for (Method method : methods) {
             try {
                 if (!DbUtil.isGetter(method)) continue;
+                if (method.getAnnotation(Json.class) == null) continue;
                 if (method.getReturnType().getAnnotation(Table.class) != null) continue;
                 if (method.getReturnType().isAssignableFrom(List.class)) continue;
-                if (method.getAnnotation(OneToMany.class) != null) continue;
-                if (method.getAnnotation(ManyToMany.class) != null) continue;
                 String fieldName = getJsonFieldName( method );
                 if (fieldName == null) continue;
                 jsonObject.put(fieldName, DbUtil.invokeGetter(method,entity));
@@ -46,7 +53,12 @@ public class JSONParser {
         return jsonObject;
     }
 
-    public static JSONArray toJsonArray(List<Object> objects){
+    public static JSONArray toJsonArray(List<Entity> objects){
+        return toJsonArray(objects);
+    }
+
+    private static JSONArray toJsonArray(Object objectsReceived){
+        List<Object> objects = (List<Object>) objectsReceived;
         if (objects == null) return null;
         JSONArray jsonArray = new JSONArray();
         for (Object object : objects)  jsonArray.put(toJsonObject(object));
@@ -54,16 +66,14 @@ public class JSONParser {
     }
 
 
-
     public static <E extends Entity> E fromJsonObject(JSONObject jsonObject, Class entityClass)
             throws JSONException,InstantiationException,IllegalAccessException {
         Field[] declaredFields = entityClass.getDeclaredFields();
         Entity entity = (Entity) entityClass.newInstance();
         for (Field field : declaredFields){
-            Class type = field.getType();
-            if (type.getAnnotation(ManyToMany.class) != null ) continue;
+            if (field.getType().getAnnotation(ManyToMany.class) != null ) continue;
             Method getter = DbUtil.getMethod("get",field);
-            String fieldName = getJsonFieldName(field, getter);
+            String fieldName = getJsonFieldName( getter);
             if (fieldName == null) continue;
             if (!jsonObject.has(fieldName) || jsonObject.isNull(fieldName)) continue;
             OneToMany oneToMany = getter.getAnnotation(OneToMany.class);
@@ -90,11 +100,6 @@ public class JSONParser {
     }
 
 
-    private static String getJsonFieldName(Field field,Method getterMethod){
-        if (getterMethod == null) return null;
-        Json jsonAnnotation = getterMethod.getAnnotation(Json.class);
-        return  (jsonAnnotation == null) ? field.getName() : jsonAnnotation.fieldName();
-    }
 
     private static String getJsonFieldName(Method getterMethod){
         if (getterMethod == null) return null;
