@@ -54,10 +54,10 @@ class JSONParser {
     }
 
     public static JSONArray toJsonArray(List<Entity> objects){
-        return toJsonArray(objects);
+        return toJsonArrayGeneric(objects);
     }
 
-    private static JSONArray toJsonArray(Object objectsReceived){
+    private static JSONArray toJsonArrayGeneric(Object objectsReceived){
         List<Object> objects = (List<Object>) objectsReceived;
         if (objects == null) return null;
         JSONArray jsonArray = new JSONArray();

@@ -108,7 +108,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             fetchAndSetFirstDegreeRelatedObject(entity);
         } catch (Exception e) {
             L.w("fetching entity "+cls.getSimpleName() + "with id "+id+" failed");
-            L.e(e.getLocalizedMessage());
+            L.e(e);
         }finally {
             return entity;
         }
@@ -123,7 +123,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         } catch (Exception e) {
             L.w("fetching entity "+cls.getSimpleName() + "for unique property "+columnName
                     +" with value "+value+" failed");
-            L.e(e.getLocalizedMessage());
+            L.e(e);
         }
         return entity;
     }
@@ -195,7 +195,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             } catch (Exception e) {
                 L.w("Error while fetching related entity "+entity.getClass().getSimpleName()+" for field "+
                         field.getName());
-                L.e(e.getLocalizedMessage());
+                L.e(e);
             }
         }
 
@@ -286,7 +286,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             getWritableDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             L.w("Error while removing entity "+entity.getClass().getSimpleName()+" with id "+entity.getId());
-            L.e(e.getLocalizedMessage());
+            L.e(e);
         } finally {
             getWritableDatabase().endTransaction();
         }
@@ -303,7 +303,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             getWritableDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             L.w("Error while saving entity "+entity.getClass().getSimpleName());
-            L.e(e.getLocalizedMessage());
+            L.e(e);
         } finally {
             entity.setReturnValueAsItIs(false);
             getWritableDatabase().endTransaction();
@@ -317,7 +317,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             else executeInsert(entity, null);
         } catch (Exception e) {
             L.w("Error while saving entity "+entity.getClass().getSimpleName());
-            L.e(e.getLocalizedMessage());
+            L.e(e);
         } finally {
             return entity;
         }
@@ -336,7 +336,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             else executeInsert(entity, parentEntity);
         } catch (Exception e) {
             L.w("Error while saving entity "+entity.getClass().getSimpleName());
-            L.e(e.getLocalizedMessage());
+            L.e(e);
         } finally {
             return entity;
         }
@@ -363,15 +363,15 @@ public class DBExecutor extends SQLiteOpenHelper {
             } catch (IllegalAccessException e) {
                 L.w("Error while saving mapping entity "+masterEntity.getClass().getSimpleName()
                         +" with method "+method.getName());
-                L.e(e.getLocalizedMessage());
+                L.e(e);
             } catch (IllegalArgumentException e) {
                 L.w("Error while saving mapping entity "+masterEntity.getClass().getSimpleName()
                         +" with method "+method.getName());
-                L.e(e.getLocalizedMessage());
+                L.e(e);
             } catch (Exception e) {
                 L.w("Error while saving mapping entity "+masterEntity.getClass().getSimpleName()
                         +" with method "+method.getName());
-                L.e(e.getLocalizedMessage());
+                L.e(e);
             }
         }
     }
@@ -415,7 +415,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             AnnotationUtils.executeAnnotationFunction(entity, AfterUpdate.class);
         } catch (Exception e) {
             L.w("Error while entity update "+entity.getClass().getSimpleName());
-            L.e(e.getLocalizedMessage());
+            L.e(e);
         }
     }
 
@@ -434,7 +434,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             AnnotationUtils.executeAnnotationFunction(entity, AfterCreate.class);
         } catch (Exception e) {
             L.w("Error while insertion entity "+entity.getClass().getSimpleName());
-            L.e(e.getLocalizedMessage());
+            L.e(e);
         }
     }
 
@@ -596,7 +596,7 @@ public class DBExecutor extends SQLiteOpenHelper {
                     dbMetaData.tableNames.remove(tableName);
                 } catch (Exception e) {
                     L.w("Error while table drop");
-                    L.e(e.getLocalizedMessage());
+                    L.e(e);
                 }
             }
             getWritableDatabase().setTransactionSuccessful();
@@ -617,7 +617,7 @@ public class DBExecutor extends SQLiteOpenHelper {
                 getWritableDatabase().execSQL(dmls.get(tableName));
             } catch (Exception e) {
                 L.w("Error while table update");
-                L.e(e.getLocalizedMessage());
+                L.e(e);
             }
         }
         getWritableDatabase().setTransactionSuccessful();
@@ -644,7 +644,7 @@ public class DBExecutor extends SQLiteOpenHelper {
             storage.storeCurrentDbMeta(dbName,dbMetaData);
         } catch (Exception e) {
             L.w("Error while table creation");
-            L.e(e.getLocalizedMessage());
+            L.e(e);
         }finally {
             getWritableDatabase().endTransaction();
         }

@@ -6,7 +6,7 @@ import android.util.Log;
  * Created by donpeter on 9/7/17.
  */
 
-public class L {
+class L {
 
     private static L lInstance = null;
 

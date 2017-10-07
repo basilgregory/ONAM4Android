@@ -22,15 +22,15 @@ public class AnnotationUtils {
             } catch (IllegalAccessException e) {
                 L.w("Error while executing life cycle event "+entity.getClass().getSimpleName()
                         +" using method "+method.getName());
-                L.e(e.getLocalizedMessage());
+                L.e(e);
             } catch (InvocationTargetException e) {
                 L.w("Error while executing life cycle event "+entity.getClass().getSimpleName()
                         +" using method "+method.getName());
-                L.e(e.getLocalizedMessage());
+                L.e(e);
             }catch (Exception e) {
                 L.w("Error while executing life cycle event "+entity.getClass().getSimpleName()
                         +" using method "+method.getName());
-                L.e(e.getLocalizedMessage());
+                L.e(e);
             }
         }
     }
