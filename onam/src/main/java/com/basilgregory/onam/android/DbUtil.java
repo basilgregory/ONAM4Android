@@ -105,6 +105,8 @@ public class DbUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        L.w("No "+prefix +" method found for "+field.getName());
+
         return null;
     }
 

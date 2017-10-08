@@ -381,6 +381,7 @@ public class DBExecutor extends SQLiteOpenHelper {
         Field[] fields = entity.getClass().getDeclaredFields();
         for (Field field : fields) {
             Method getterMethod = DbUtil.getMethod("get",field);
+            if (getterMethod == null) continue;
             if (field.getType().getAnnotation(Table.class) == null &&
                     getterMethod.getAnnotation(OneToMany.class) == null ) continue;
             if (getterMethod.getAnnotation(OneToMany.class) != null ){ //Returns a list.
