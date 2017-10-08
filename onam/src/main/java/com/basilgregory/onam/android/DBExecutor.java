@@ -387,10 +387,12 @@ public class DBExecutor extends SQLiteOpenHelper {
             if (getterMethod.getAnnotation(OneToMany.class) != null ){ //Returns a list.
                 if (entity.getId() < 1) executeInsert(entity, null); // Parent entity id required for many mapping.
                 List<Entity> relatedEntities = (List<Entity>) DbUtil.invokeGetter(field, entity);
+                if (relatedEntities == null) continue;
                 for (Entity relatedEntity: relatedEntities )
                     if (relatedEntity != null) insertOrUpdateEntity(relatedEntity, entity);
             }else{
                 Object relatedObject = DbUtil.invokeGetter(field, entity);
+                if (relatedObject == null) continue;
                 if (relatedObject != null && relatedObject instanceof Entity)
                     insertOrUpdateEntity((Entity) relatedObject);
             }
