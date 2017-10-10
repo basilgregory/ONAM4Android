@@ -39,10 +39,10 @@ class JSONParser {
         Method[] methods = entity.getClass().getDeclaredMethods();
         for (Method method : methods) {
             try {
-                if (!DbUtil.isGetter(method)) continue;
-                if (method.getAnnotation(Json.class) == null) continue;
-                if (method.getReturnType().getAnnotation(Table.class) != null) continue;
-                if (method.getReturnType().isAssignableFrom(List.class)) continue;
+                if (!DbUtil.isGetter(method) ||
+                        method.getAnnotation(Json.class) == null ||
+                        method.getReturnType().getAnnotation(Table.class) != null ||
+                        method.getReturnType().isAssignableFrom(List.class)) continue;
                 String fieldName = getJsonFieldName( method );
                 if (fieldName == null) continue;
                 jsonObject.put(fieldName, DbUtil.invokeGetter(method,entity));
