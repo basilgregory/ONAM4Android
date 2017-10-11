@@ -63,8 +63,7 @@ class JSONParser {
         JSONArray jsonArray = new JSONArray();
         for (Object object : objects) {
             JSONObject jsonObject = toJsonObject(object);
-            if (jsonObject == null) continue;
-            if (jsonObject.length() < 1) continue;
+            if (jsonObject == null || jsonObject.length() < 1) continue;
             jsonArray.put(jsonObject);
         }
         return jsonArray;

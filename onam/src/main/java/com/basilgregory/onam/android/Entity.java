@@ -119,15 +119,20 @@ public abstract class Entity implements Serializable{
         DBExecutor.init(activityObject.getApplicationContext(),classWithDBAnnotation);
     }
 
-    public static void init(Activity activityObject, Object classWithDBAnnotation,boolean debug){
-        L.getInstance().setDebug(debug);
-        init(activityObject,classWithDBAnnotation);
+    public static void init(Activity activityObject){
+        DBExecutor.init(activityObject.getApplicationContext(),activityObject);
     }
 
-    public static void init(Activity activityObject, Object classWithDBAnnotation,boolean debug,boolean verbose){
-        L.getInstance().setVerbose(verbose);
-        init(activityObject, classWithDBAnnotation, debug);
+    public static void log(boolean debug){
+        L.getInstance().setDebug(debug);
     }
+    public static void log(boolean debug,boolean verbose){
+        log(debug);
+        L.getInstance().setVerbose(verbose);
+    }
+
+
+
 
     /**
      * The ORM checks for the presence of id. See #{getId}, which is a value above 0( You wont be able to manually set this value ).
@@ -231,13 +236,7 @@ public abstract class Entity implements Serializable{
     public static Entity fromJSON(JSONObject json,Class rootEntity){
         try {
             return JSONParser.fromJsonObject(json,rootEntity);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+        } catch (JSONException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return null;
@@ -246,13 +245,7 @@ public abstract class Entity implements Serializable{
     public static List<Entity> fromJSON(JSONArray jsonArray,Class rootEntity){
         try {
             return JSONParser.fromJsonArray(jsonArray,rootEntity);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+        } catch (JSONException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return null;
