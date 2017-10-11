@@ -22,7 +22,7 @@ repositories {
 And
 ```
 dependencies {
-    compile 'com.github.basilgregory:ONAM4Android:1.0'
+    compile 'com.github.basilgregory:ONAM4Android:2.0'
 }
 ```
 
@@ -35,11 +35,17 @@ Tables: **post, comment, user**.
 
 You need to call init() function in your launcher Activity onCreate().
 
+If @DB annonation is defined in Activity Class file.
 ```
-Entity.init(this);
+    Entity.init(this);
+```
+Incase @DB annonation is defined in separate Class file.
+
+```
+    Entity.init(this, objectOfClass);
 ```
 
-More on init function [Activate Logs using init()](https://github.com/basilgregory/ONAM4Android/wiki/Logs)
+For information on how to activate logs [Activate Logs using log()](https://github.com/basilgregory/ONAM4Android/wiki/Logs)
 
 
 You need to specify the Entity classes using @DB annotation along with name and version of your database, in the same launcher Activity.
@@ -261,7 +267,15 @@ Correspondingly in **User** entity, the tableName should be same.
 
 
 
+## JSON parser
 
+We have added support to convert Entity objects/delegate objects to JSONObject/JSONArray.
+
+```
+    JSONObject postObject = Entity.toJSON(post);
+```
+were 'post' is object of **Post** Entity, and this will return a JSONObject with the values mapped to corresponding fields.  
+For detailed information on how to specify the fields to be marked for JSON convertion [JSONParser Docs](https://github.com/basilgregory/ONAM4Android/wiki/JSON-Parser)
 
 
 ## Contributing
