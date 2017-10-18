@@ -33,31 +33,61 @@ Lets consider the below database requirements.
 Database Name: **blog_db**  
 Tables: **post, comment, user**.  
 
-You need to call init() function in your launcher Activity onCreate().
 
-If @DB annonation is defined in Activity Class file.
-```
-    Entity.init(this);
-```
-Incase @DB annonation is defined in separate Class file.
-
-```
-    Entity.init(this, objectOfClass);
-```
-
-For information on how to activate logs [Activate Logs using log()](https://github.com/basilgregory/ONAM4Android/wiki/Logs)
-
-
-You need to specify the Entity classes using @DB annotation along with name and version of your database, in the same launcher Activity.
+## @DB 
 
 ```
 @DB(name = "blog_db",
         tables = {Post.class,Comment.class,User.class
 }, version = 1)
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    ...
+}
 ```
 
+## Entity.init()
 
-Types of mappings that are needed,
+You need to call init() function in same class where @DB annotation is defined.
+
+If @DB annonation is defined in Activity Class file.
+```
+@DB(name = "blog_db",
+        tables = {Post.class,Comment.class,User.class
+}, version = 1)
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Entity.init(this);
+    }
+    ...
+}
+```
+Incase @DB annonation is defined in separate Class file.
+
+```
+@DB(name = "blog_db",
+        tables = {Post.class,Comment.class,User.class
+}, version = 1)
+public class InitClass {
+
+    public InitClass(Activity activity) {
+        Entity.init(activity, this);
+    }
+    ...
+}
+```
+
+For information on how to activate logs [Activate Logs](https://github.com/basilgregory/ONAM4Android/wiki/Logs) using log()
+
+## Mappings
+
+### Types of mappings that are needed,
 Post has ManyToOne mapping with User (as owner of post)  
 Post has OneToMany mapping with Comment (as comments of post)  
 Post has ManyToMany mapping with User (as followers of post)  
@@ -108,9 +138,11 @@ public class Post extends Entity {
 }
 ```
 
+### Transient fields
+
 All fields will be converted to database columns. All fields with transient modifier *( in this case* private transient String transientPost *)* will be ommited out. You may use such fields to do your bidding at freewill.
 
-Now generate getter and setters for all fields ( This is mandatory for all fields except transient fields, *your choice* ).
+Now generate getter and setters for all fields ( This is mandatory for all fields except transient fields).
 
 ```
     .....
@@ -140,6 +172,9 @@ Now generate getter and setters for all fields ( This is mandatory for all field
 ```
 
 No changes are needed in setter functions. 
+
+### Getter functions
+
 For getter functions that returns entity/List<Enitity> (that has some mapping relation), like **User**, **Comment**, you need to replace the return statement. 
 
 In this case, for the following functions.
@@ -222,9 +257,7 @@ Comment has ManyToOne mapping with Post (as comments of post)
     }
 ```
 Here a foreign key column named *post_id* will be created in **Comment** table.  
-If you are providing a column name for ManyToOne mapping, then correspondingly  
-the same name as to be provided for the OneToMany mapping in related entity as  
-referencedColumnName, here *post_id*.
+If you are providing a column name for ManyToOne mapping, then correspondingly the same name as to be provided for the OneToMany mapping in related entity as referencedColumnName, here *post_id*.
 
 **Post** has ManyToOne mapping with **User**  
 For ManyToOne mapping a foreignkey for **User** entity is needed at **Post** table, you may suggest a foreign key column name.
