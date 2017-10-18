@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.basilgregory.onam.android.Entity;
@@ -17,6 +18,9 @@ import com.basilgregory.onamsample.entities.Post;
 import com.basilgregory.onamsample.entities.User;
 import com.basilgregory.onamsample.listeners.ClickListener;
 import com.basilgregory.onamsample.listeners.RecyclerTouchListener;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -43,11 +47,34 @@ public class AllPostsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_all_posts);
 
         //This init should be called in the activity #{onCreate} where you have #{DB} annotation added.
-        Entity.init(this,this, true, false);
+        Entity.init(this);
         registerUser();
         connectViews();
 
+        try {
+            convertJSONToEntity();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    /**
+     * Sample function
+     * @throws Exception
+     */
+    private void convertJSONToEntity() throws Exception{
+        JSONObject post = new JSONObject();
+        post.put("title","some title");
+        JSONArray comments = new JSONArray();
+        JSONObject comment = new JSONObject();
+        comment.put("comment","commnet 1");
+        JSONObject comment2 = new JSONObject();
+        comment2.put("comment","commnet 2");
+        comments.put(comment);
+        comments.put(comment2);
+        post.put("comments",comments);
+        Post post1 = (Post) Entity.fromJSON(post,Post.class);
+        Log.d("TAG","near");
     }
 
     /**
