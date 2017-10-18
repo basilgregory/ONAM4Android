@@ -62,6 +62,17 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:src="@android:drawable/ic_input_add"/>
+        <Button
+            android:id="@+id/removePost"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginBottom="25dp"
+            android:clickable="true"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/colorAccent"
+            android:text="REMOVE POST"
+            android:layout_toLeftOf="@id/addComment"
+            android:layout_alignParentBottom="true"/>
 
     </RelativeLayout>
 </LinearLayout>

@@ -59,7 +59,7 @@ public class AllPostsActivity extends AppCompatActivity {
     }
 
     /**
-     * Sample function
+     * Sample function to display the convertion of JSON to Entity
      * @throws Exception
      */
     private void convertJSONToEntity() throws Exception{

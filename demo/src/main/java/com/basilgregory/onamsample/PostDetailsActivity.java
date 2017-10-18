@@ -8,6 +8,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
 
@@ -28,6 +29,7 @@ public class PostDetailsActivity extends AppCompatActivity {
     RecyclerView comments;
     Post post;
     FloatingActionButton addComment;
+    Button removePost;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +74,9 @@ public class PostDetailsActivity extends AppCompatActivity {
         addComment = (FloatingActionButton) findViewById(R.id.addComment);
         addComment.setOnClickListener(newCommentClick);
         postTitle = (TextView) findViewById(R.id.postTitle);
+        removePost = (Button) findViewById(R.id.removePost);
+        removePost.setOnClickListener(removePostClick);
+
         postDescription = (TextView) findViewById(R.id.postDescription);
         userName = (TextView) findViewById(R.id.userName);
         userBio = (TextView) findViewById(R.id.userBio);
@@ -90,6 +95,14 @@ public class PostDetailsActivity extends AppCompatActivity {
             startActivity(new Intent(PostDetailsActivity.this,AddCommentActivity.class)
                     .putExtra("post_id",post.getId()));
 
+        }
+    };
+    View.OnClickListener removePostClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (post == null) return;
+            post.delete();
+            finish();
         }
     };
 
