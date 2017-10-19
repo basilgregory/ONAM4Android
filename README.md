@@ -109,6 +109,9 @@ public class User extends Entity {
 ```
 
 ## Columns
+
+The primary key in ONAM for all tables are maintained internally (auto generated, incrementing), you will be able to access them using getId() method, but not overwrite or alter its value.
+
 Now add columns as class fields.
 
 ```
@@ -232,7 +235,7 @@ See [wiki on Mappings](https://github.com/basilgregory/ONAM4Android/wiki/Entity-
 
 Generating getter and setter function for transient fields are optional.
 
-Custom table name and column names may be sepcified for table creation using @Column and @Table annotations.
+Custom table name and column names may be specified for table creation using @Column(name = "<column-name>") and @Table(name = "<table-name>") annotations.
 See [migration docs](https://github.com/basilgregory/ONAM4Android/wiki/Migration) on how to implement the same.
 
 
@@ -262,8 +265,12 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ### Authors
 
-* **Robin Alex Panicker** - [BasilGregory Software Labs Pvt Ltd](https://github.com/rp-bg)
+* **Robin Alex Panicker** - [BasilGregory Software Labs Pvt Ltd](https://github.com/rp-bg) 
 * **Don Peter** - [BasilGregory Software Labs Pvt Ltd](https://github.com/dp-bg)
+
+### Contact
+
+email: onam@basilgregory.com
 
 ### License
 
