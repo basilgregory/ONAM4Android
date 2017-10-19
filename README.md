@@ -208,6 +208,28 @@ You need to generate getters and setters of all fields that has to converted to 
         this.transientPost = transientPost;
     }
 ```
+
+In example code above, there are changes made to getter functions of related entities, these changes are mandatory for related entities.
+```
+    @ManyToOne
+    public User getUser() {
+        return fetch(this.user,new User(){});
+    }
+
+    @OneToMany(referencedColumnName = "post_id", targetEntity = Comment.class)
+    public List<Comment> getComments() {
+        return fetch(this.comments,new Comment(){});
+    }
+    
+    @ManyToMany(tableName = "post_followers", targetEntity = User.class)
+    public List<User> getFollowers() {
+        return fetch(this.followers,new User(){});
+    }
+```
+See [wiki on Mappings](https://github.com/basilgregory/ONAM4Android/wiki/Entity-Mappings) to know how to implement the same.
+
+
+
 Generating getter and setter function for transient fields are optional.
 
 Custom table name and column names may be sepcified for table creation using @Column and @Table annotations.
@@ -216,7 +238,7 @@ See [migration docs](https://github.com/basilgregory/ONAM4Android/wiki/Migration
 
 ## Lifecycle Events
 
-You can define methods that will be executed before create, before update, after crate or after update using corresponding annotations.
+You can define methods that will be executed before create, before update, after create or after update using corresponding annotations.
 See [Lifecycle docs](https://github.com/basilgregory/ONAM4Android/wiki/Lifecycle) on how to implement the same.
 
 ## JSON parser
