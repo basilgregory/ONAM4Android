@@ -108,6 +108,7 @@ public class User extends Entity {
 }
 ```
 
+## Columns
 Now add columns as class fields.
 
 ```
@@ -140,16 +141,83 @@ Post has ManyToOne mapping with User (as owner of post)
 Post has OneToMany mapping with Comment (as comments of post)  
 Post has ManyToMany mapping with User (as followers of post)  
 
-Comment has ManyToOne mapping with Post (as comments of post)  
-Comment has ManyToOne mapping with User (as owner of comment)  
-
-User has OneToMany mapping with Post (as owner of post)  
-User has OneToMany mapping with Comments (as owner of comment)  
-User has ManyToMany mapping with Post (as followed posts)  
-
-
 For more on entity mappings, see [wiki on Mappings](https://github.com/basilgregory/ONAM4Android/wiki/Entity-Mappings)
 
+
+## Getters and Setters
+
+You need to generate getters and setters of all fields that has to converted to columns.
+
+```
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getPost() {
+        return post;
+    }
+
+    public void setPost(String post) {
+        this.post = post;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @OneToMany(referencedColumnName = "post_id", targetEntity = Comment.class)
+    public List<Comment> getComments() {
+        return fetch(this.comments,new Comment(){});
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    @ManyToOne
+    public User getUser() {
+        return fetch(this.user,new User(){});
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @ManyToMany(tableName = "post_followers", targetEntity = User.class)
+    public List<User> getFollowers() {
+        return fetch(this.followers,new User(){});
+    }
+
+    public void setFollowers(List<User> followers) {
+        this.followers = followers;
+    }
+
+    public String getTransientPost() {
+        return transientPost;
+    }
+
+    public void setTransientPost(String transientPost) {
+        this.transientPost = transientPost;
+    }
+```
+Generating getter and setter function for transient fields are optional.
+
+Custom table name and column names may be sepcified for table creation using @Column and @Table annotations.
+See [migration docs](https://github.com/basilgregory/ONAM4Android/wiki/Migration) on how to implement the same.
+
+
+## Lifecycle Events
+
+You can define methods that will be executed before create, before update, after crate or after update using corresponding annotations.
+See [Lifecycle docs](https://github.com/basilgregory/ONAM4Android/wiki/Lifecycle) on how to implement the same.
 
 ## JSON parser
 
