@@ -67,9 +67,8 @@ public class QueryBuilder {
         orderBy = orderBy == null? "" : " order by "+orderBy;
         StringBuffer selectQuery = new StringBuffer("select * from ").append(tableName)
                 .append(whereClause).append(groupBy).append(orderBy);
-
-        if ((startIndex != null) && (pageSize != null))
-            selectQuery.append(" LIMIT ").append(startIndex).append(",").append(pageSize);
+        if (pageSize != null)
+            selectQuery.append(" LIMIT ").append(startIndex == null? 0 : startIndex).append(",").append(pageSize);
         selectQuery.append(";");
         return selectQuery.toString();
     }

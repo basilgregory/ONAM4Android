@@ -13,5 +13,5 @@ import java.lang.annotation.RetentionPolicy;
 public @interface OneToMany{
     short fetchType() default FetchType.LAZY;
     String referencedColumnName() default  "";
-    Class targetEntity(); //required in JSONParser.
+    Class targetEntity() default Object.class;
 }

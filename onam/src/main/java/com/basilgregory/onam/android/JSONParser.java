@@ -81,10 +81,9 @@ class JSONParser {
             if (fieldName == null) continue;
             if (!jsonObject.has(fieldName) || jsonObject.isNull(fieldName)) continue;
             OneToMany oneToMany = getter.getAnnotation(OneToMany.class);
-            ManyToMany manyToMany = getter.getAnnotation(ManyToMany.class);
-            Class targetEntity = oneToMany == null?
-                    manyToMany == null ?
-                            null : manyToMany.targetEntity() : oneToMany.targetEntity();
+            Class targetEntity = DbUtil.getListParameterType(getter);
+            if (oneToMany != null && oneToMany.targetEntity() != Object.class &&
+                    targetEntity == null) targetEntity = oneToMany.targetEntity();
             DbUtil.invokeSetter(entity,DbUtil.getMethod("set",field),
                     jsonObject.get(fieldName) instanceof JSONArray && targetEntity != null ?
                     fromJsonArray(jsonObject.getJSONArray(fieldName),targetEntity) :

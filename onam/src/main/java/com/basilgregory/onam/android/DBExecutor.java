@@ -351,7 +351,11 @@ public class DBExecutor extends SQLiteOpenHelper {
                 List<Entity> getterResponse = (List<Entity>) method.invoke(masterEntity);
                 if (getterResponse == null) continue; //rest will be executed only if the mapping or list of entities returned is not null.
                 String tableName = manyToMany.tableName();
-                Class targetEntity = manyToMany.targetEntity();
+
+                Class targetEntity = DbUtil.getListParameterType(method);
+                if (manyToMany != null && manyToMany.targetEntity() != Object.class &&
+                        targetEntity == null) targetEntity = manyToMany.targetEntity();
+
                 removeMapping(tableName,getMappingForeignColumnNameClass(masterEntity.getClass()),masterEntity.getId());
                 for (Entity entity:getterResponse){
                     if (entity == null) continue;
@@ -468,8 +472,11 @@ public class DBExecutor extends SQLiteOpenHelper {
       Cursor cursor = getReadableDatabase().rawQuery(new StringBuffer("SELECT * FROM ")
               .append(tableName).append(" WHERE ")
               .append(aColumnName)
+              .append(" = ")
               .append(String.valueOf(aValue))
+              .append(" AND ")
               .append(bColumnName)
+              .append(" = ")
               .append(String.valueOf(bValue))
               .toString(),null);
         return cursor != null && cursor.getCount() > 0;
@@ -557,7 +564,11 @@ public class DBExecutor extends SQLiteOpenHelper {
                     String mappingTableName = manyToMany.tableName();
                     mappingTables.add(mappingTableName);
                     if (tableExists(mappingTableName)) continue;
-                    Class targetEntity = manyToMany.targetEntity();
+
+                    Class targetEntity = DbUtil.getListParameterType(method);
+                    if (manyToMany != null && manyToMany.targetEntity() != Object.class &&
+                            targetEntity == null) targetEntity = manyToMany.targetEntity();
+
                     String ddl = DDLBuilder.createMappingTables(mappingTableName,table,targetEntity);
                     mappingTableCreateDDL.put(mappingTableName,ddl);
                 }

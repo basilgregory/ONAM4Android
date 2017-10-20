@@ -13,5 +13,5 @@ import java.lang.annotation.RetentionPolicy;
 public @interface ManyToMany {
     short fetchType() default FetchType.LAZY;
     String tableName();
-    Class targetEntity();
+    Class targetEntity() default Object.class;
 }

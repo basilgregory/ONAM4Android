@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Created by donpeter on 8/29/17.
  */
 
-public class DB {
+class DB {
     static String PRIMARY_KEY_ID = "_id";
 
     static String toString(Serializable serializable) throws Exception{

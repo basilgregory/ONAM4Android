@@ -64,6 +64,8 @@ public abstract class Entity implements Serializable{
         this.id = id;
     }
 
+    public static String PRIMARY_KEY_COLUMN_NAME = DB.PRIMARY_KEY_ID;
+
     /**
      * This will make a database fetch only when the refresh is set to true (controlled by you) or the entity you are
      * querying is null.
@@ -205,20 +207,57 @@ public abstract class Entity implements Serializable{
         return (List<E>)DBExecutor.getInstance().findByProperty(entityClass,columnName,value,startIndex,pageSize);
     }
 
+    public static <E extends Entity> List<E> findByProperty(Class entityClass,String columnName,Object value){
+        return (List<E>)DBExecutor.getInstance().findByProperty(entityClass,columnName,value,null,null);
+    }
+
+    public static <E extends Entity> List<E> findByProperty(Class entityClass,String columnName,Object value,Integer limit){
+        return (List<E>)DBExecutor.getInstance().findByProperty(entityClass,columnName,value,null,limit);
+    }
+
     public static <E extends Entity> List<E> findAll(Class entityClass, Integer startIndex,Integer pageSize){
         return (List<E>) DBExecutor.getInstance().findAll(entityClass,null,startIndex,pageSize);
+    }
+
+    public static <E extends Entity> List<E> findAll(Class entityClass){
+        return (List<E>) DBExecutor.getInstance().findAll(entityClass,null,null,null);
+    }
+
+    public static <E extends Entity> List<E> findAll(Class entityClass, Integer limit){
+        return (List<E>) DBExecutor.getInstance().findAll(entityClass,null,null,limit);
     }
 
     public static <E extends Entity> List<E> findAll(Class entityClass,String whereClause,Integer startIndex,Integer pageSize){
         return (List<E>) DBExecutor.getInstance().findAll(entityClass,whereClause,startIndex,pageSize);
     }
 
+    public static <E extends Entity> List<E> findAll(Class entityClass,String whereClause, Integer limit){
+        return (List<E>) DBExecutor.getInstance().findAll(entityClass,whereClause,null,limit);
+    }
+    public static <E extends Entity> List<E> findAll(Class entityClass,String whereClause){
+        return (List<E>) DBExecutor.getInstance().findAll(entityClass,whereClause,null,null);
+    }
+
     public static <E extends Entity> List<E> findAll(Class entityClass,String orderByColumn,boolean descending,Integer startIndex,Integer pageSize){
         return (List<E>) DBExecutor.getInstance().findAllWithOrderBy(entityClass,null,orderByColumn,descending,startIndex,pageSize);
     }
 
+    public static <E extends Entity> List<E> findAll(Class entityClass,String orderByColumn,boolean descending){
+        return (List<E>) DBExecutor.getInstance().findAllWithOrderBy(entityClass,null,orderByColumn,descending,null,null);
+    }
+
+    public static <E extends Entity> List<E> findAll(Class entityClass,String orderByColumn,boolean descending,Integer limit){
+        return (List<E>) DBExecutor.getInstance().findAllWithOrderBy(entityClass,null,orderByColumn,descending,null,limit);
+    }
+
     public static <E extends Entity> List<E> findAll(Class entityClass,String whereClause, String orderByColumn,boolean descending,Integer startIndex,Integer pageSize){
         return (List<E>) DBExecutor.getInstance().findAllWithOrderBy(entityClass,whereClause,orderByColumn,descending,startIndex,pageSize);
+    }
+    public static <E extends Entity> List<E> findAll(Class entityClass,String whereClause, String orderByColumn,boolean descending){
+        return (List<E>) DBExecutor.getInstance().findAllWithOrderBy(entityClass,whereClause,orderByColumn,descending,null,null);
+    }
+    public static <E extends Entity> List<E> findAll(Class entityClass,String whereClause, String orderByColumn,boolean descending,Integer limit){
+        return (List<E>) DBExecutor.getInstance().findAllWithOrderBy(entityClass,whereClause,orderByColumn,descending,null,limit);
     }
 
     public JSONObject toJSON(){
