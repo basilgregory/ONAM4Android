@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.basilgregory.onam.android.Entity;
@@ -46,13 +45,13 @@ public class AllPostsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_posts);
 
-        //This init should be called in the activity #{onCreate} where you have #{DB} annotation added.
-        Entity.init(this);
+        Entity.init(this); //This init should be called in the activity #{onCreate} where you have #{DB} annotation added.
+        Entity.log(true,true); //Activate both debug and verbose logs
         registerUser();
         connectViews();
 
         try {
-            convertJSONToEntity();
+            convertJSONToEntity(); //Sample function to demo convertion of JSON to Entity.
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,7 +73,6 @@ public class AllPostsActivity extends AppCompatActivity {
         comments.put(comment2);
         post.put("comments",comments);
         Post post1 = (Post) Entity.fromJSON(post,Post.class);
-        Log.d("TAG","near");
     }
 
     /**
@@ -87,7 +85,29 @@ public class AllPostsActivity extends AppCompatActivity {
         user.setName("John Doe");
         user.setBio("Developer");
         user.save();
+
+        createUserListToFollow();
     }
+
+    private void createUserListToFollow(){
+        User aUser = new User();
+        aUser.setName("Follower A");
+        aUser.setBio("Developer");
+        aUser.save();
+        User bUser = new User();
+        bUser.setName("Follower B");
+        bUser.setBio("Designer");
+        bUser.save();
+        User cUser = new User();
+        cUser.setName("Follower C");
+        cUser.setBio("Doctor");
+        cUser.save();
+        User dUser = new User();
+        dUser.setName("Follower D");
+        dUser.setBio("Entrepreneur");
+        dUser.save();
+    }
+
 
     @Override
     protected void onResume() {
@@ -136,7 +156,7 @@ public class AllPostsActivity extends AppCompatActivity {
     };
 
     private void fetchAllPosts(){
-        postList =  Post.findAll(Post.class,null,null);
+        postList =  Post.findAll(Post.class);
 
     }
 

@@ -3,6 +3,7 @@ package com.basilgregory.onamsample;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,11 +11,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.support.design.widget.FloatingActionButton;
 
+import com.basilgregory.onam.android.Entity;
 import com.basilgregory.onamsample.adapter.CommentsAdapter;
 import com.basilgregory.onamsample.entities.Comment;
 import com.basilgregory.onamsample.entities.Post;
+import com.basilgregory.onamsample.entities.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,7 @@ public class PostDetailsActivity extends AppCompatActivity {
         else{
             connectAdapter(postId);
             updateViews();
+            addFollowersToPost();
         }
     }
 
@@ -106,9 +109,19 @@ public class PostDetailsActivity extends AppCompatActivity {
         }
     };
 
+
+    private void addFollowersToPost(){
+        if (post == null || post.getFollowers() != null) return;
+        List<User> propsedFollowers = User.findAll(User.class, Entity.PRIMARY_KEY_COLUMN_NAME+" != 1");
+        post.setFollowers(propsedFollowers);
+        post.save();
+    }
+
+
     private List<Comment> getAllCommentsForPost(long postId){
         List<Comment> comments = new ArrayList<>();
         post = findPost(postId);
+        post.getFollowers();
         if (post == null) return comments;
         return post.getComments();
     }
