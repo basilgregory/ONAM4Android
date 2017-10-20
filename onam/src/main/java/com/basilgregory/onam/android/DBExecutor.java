@@ -28,7 +28,7 @@ import static com.basilgregory.onam.android.DbUtil.getMappingForeignColumnNameCl
  * Created by donpeter on 8/29/17.
  */
 
-public class DBExecutor extends SQLiteOpenHelper {
+class DBExecutor extends SQLiteOpenHelper {
 
 
     //region Boiler plate code
@@ -469,16 +469,8 @@ public class DBExecutor extends SQLiteOpenHelper {
 
     private boolean doesPropertyExistsForMappingTable(String tableName,
                                               String aColumnName,long aValue,String bColumnName,long bValue) throws Exception{
-      Cursor cursor = getReadableDatabase().rawQuery(new StringBuffer("SELECT * FROM ")
-              .append(tableName).append(" WHERE ")
-              .append(aColumnName)
-              .append(" = ")
-              .append(String.valueOf(aValue))
-              .append(" AND ")
-              .append(bColumnName)
-              .append(" = ")
-              .append(String.valueOf(bValue))
-              .toString(),null);
+      Cursor cursor = getReadableDatabase().rawQuery(QueryBuilder.queryMappingTable(tableName,
+                aColumnName, aValue, bColumnName, bValue),null);
         return cursor != null && cursor.getCount() > 0;
 
     }

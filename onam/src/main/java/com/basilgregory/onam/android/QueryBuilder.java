@@ -13,7 +13,21 @@ import static com.basilgregory.onam.android.DbUtil.invokeGetter;
  * Created by donpeter on 8/29/17.
  */
 
-public class QueryBuilder {
+class QueryBuilder {
+
+    static String queryMappingTable(String tableName,
+                                    String aColumnName,long aValue,String bColumnName,long bValue){
+        return new StringBuffer("SELECT * FROM ")
+                .append(tableName).append(" WHERE ")
+                .append(aColumnName)
+                .append(" = ")
+                .append(String.valueOf(aValue))
+                .append(" AND ")
+                .append(bColumnName)
+                .append(" = ")
+                .append(String.valueOf(bValue))
+                .toString();
+    }
 
     static String findById(Class<Entity> cls,long id){
         return selectQuery(DbUtil.getTableName(cls), DB.PRIMARY_KEY_ID+" = "+id,null,null,0,1);

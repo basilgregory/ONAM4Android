@@ -16,7 +16,7 @@ import static com.basilgregory.onam.android.DbUtil.getTableName;
  * Created by donpeter on 8/28/17.
  */
 
-public class DDLBuilder {
+class DDLBuilder {
 
     static String createMappingTables(String tableName,Class fromClass,Class targetClass){
         StringBuffer ddlCreate = new StringBuffer();

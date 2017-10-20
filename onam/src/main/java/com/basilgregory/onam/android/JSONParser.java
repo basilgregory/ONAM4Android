@@ -33,7 +33,7 @@ class JSONParser {
      * @param entity
      * @return null if conversion fails
      */
-    public static JSONObject toJsonObject(Object entity){
+    static JSONObject toJsonObject(Object entity){
         if (entity == null) return null;
         JSONObject jsonObject = new JSONObject();
         Method[] methods = entity.getClass().getDeclaredMethods();
@@ -53,7 +53,7 @@ class JSONParser {
         return jsonObject;
     }
 
-    public static JSONArray toJsonArray(List<Entity> objects){
+    static JSONArray toJsonArray(List<Entity> objects){
         return toJsonArrayGeneric(objects);
     }
 
@@ -70,7 +70,7 @@ class JSONParser {
     }
 
 
-    public static <E extends Entity> E fromJsonObject(JSONObject jsonObject, Class entityClass)
+    static <E extends Entity> E fromJsonObject(JSONObject jsonObject, Class entityClass)
             throws JSONException,InstantiationException,IllegalAccessException {
         Field[] declaredFields = entityClass.getDeclaredFields();
         Entity entity = (Entity) entityClass.newInstance();
@@ -95,7 +95,7 @@ class JSONParser {
         return (E) entity;
     }
 
-    public static <E extends Entity> List<E> fromJsonArray(JSONArray jsonArray,Class entity) throws JSONException,InstantiationException,IllegalAccessException{
+    static <E extends Entity> List<E> fromJsonArray(JSONArray jsonArray,Class entity) throws JSONException,InstantiationException,IllegalAccessException{
         List<Entity> entities = new ArrayList<>();
         for (int i = 0; i < jsonArray.length() ;i++)
             if (jsonArray.get(i) instanceof JSONObject) entities.add(fromJsonObject(jsonArray.getJSONObject(i), entity));

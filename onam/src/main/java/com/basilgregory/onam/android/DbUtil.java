@@ -20,19 +20,19 @@ import java.util.List;
  * Created by donpeter on 8/29/17.
  */
 
-public class DbUtil {
-    public static String getTableName(Entity entity){
+class DbUtil {
+    static String getTableName(Entity entity){
         return getTableName((Class<Entity>)entity.getClass());
     }
 
-    public static String getReferencedColumnName(Annotation annotation,Class entityClass){
+    static String getReferencedColumnName(Annotation annotation,Class entityClass){
         if (annotation == null) return null;
         if (((OneToMany) annotation).referencedColumnName().isEmpty())
             return entityClass.getSimpleName().toLowerCase()+"_id";
         return ((OneToMany) annotation).referencedColumnName();
     }
 
-    public static String getTableName(Class<Entity> cls){
+    static String getTableName(Class<Entity> cls){
         return (cls.getAnnotation(Table.class) == null || cls.getAnnotation(Table.class).name().isEmpty()) ?
                 cls.getSimpleName().toLowerCase() :
                 cls.getAnnotation(Table.class).name();

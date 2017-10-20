@@ -15,7 +15,7 @@ import java.util.List;
  * Created by donpeter on 9/1/17.
  */
 
-public class DMLBuilder {
+class DMLBuilder {
     static HashMap<String,String> curateAndDropTables(List<String> tableNamesAlreadyInDb,Class[] annotatedTablesList,
                                                       List<String> mappingTableNames){
         ArrayList<String> tablesListedForRemoval = new ArrayList<>();

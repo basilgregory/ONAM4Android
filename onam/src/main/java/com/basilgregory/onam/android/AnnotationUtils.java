@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
  * Created by donpeter on 9/14/17.
  */
 
-public class AnnotationUtils {
+class AnnotationUtils {
     static void executeAnnotationFunction(Entity entity, Class annotationClass){
         if (entity == null) return ;
         L.v("About to execute life cycle event "+annotationClass.getSimpleName()

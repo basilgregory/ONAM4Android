@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
  * Created by donpeter on 8/29/17.
  */
 
-public enum FieldType {
+enum FieldType {
     INTEGER("integer"),
     INT("integer"),
     LONG("integer"),

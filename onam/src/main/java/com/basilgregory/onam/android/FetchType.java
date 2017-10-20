@@ -7,7 +7,4 @@ package com.basilgregory.onam.android;
 public interface FetchType {
     public static final short LAZY = 0;
     public static final short EAGER = 1;
-
-
-
 }

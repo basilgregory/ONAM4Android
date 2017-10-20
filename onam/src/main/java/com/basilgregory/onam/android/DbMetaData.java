@@ -8,7 +8,7 @@ import java.util.List;
  * Created by donpeter on 9/1/17.
  */
 
-public class DbMetaData implements Serializable{
+class DbMetaData implements Serializable{
     int version = 0;
     List<String> tableNames = new ArrayList<>();
 }

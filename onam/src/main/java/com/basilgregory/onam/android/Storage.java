@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
  * Created by donpeter on 9/1/17.
  */
 
-public class Storage {
+class Storage {
     Context context;
     Storage(Context context){
         this.context = context;

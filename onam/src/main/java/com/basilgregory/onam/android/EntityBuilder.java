@@ -19,7 +19,7 @@ import static com.basilgregory.onam.android.Entity.find;
  * Created by donpeter on 8/30/17.
  */
 
-public class EntityBuilder {
+class EntityBuilder {
 
     static List<Entity> getEntityFromMappingTable(Cursor cursor, Class collectionType){
         if (cursor == null || cursor.getCount() < 1) return null;
