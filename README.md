@@ -234,7 +234,7 @@ In example code above, there are changes made to getter functions of related ent
 See [wiki on Mappings](https://github.com/basilgregory/ONAM4Android/wiki/Entity-Mappings) to know how to implement the same.
 
 
-Custom table name and column names may be specified for table creation using @Column(name = "<column-name>") and @Table(name = "<table-name>") annotations.
+Custom table name and column names may be specified for table creation using @Column(name = "column_name") and @Table(name = "table_name") annotations.
 See [migration docs](https://github.com/basilgregory/ONAM4Android/wiki/Migration) on how to implement the same.
 
 
@@ -252,7 +252,7 @@ This will return null, if the row doesn't exist.
    User user = User.findByUniqueProperty(User.class, "name", "John Doe");
 ```
 This will return a single row if it exists with value "John Doe" in column "name".
-Custom column names may be specified for tables using @Column(name = "<column-name>") annotation.
+Custom column names may be specified for tables using @Column(name = "column_name") annotation.
 See [migration docs](https://github.com/basilgregory/ONAM4Android/wiki/Migration) on how to implement the same.
 
 ### Find by property
