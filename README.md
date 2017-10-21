@@ -36,6 +36,8 @@ Tables: **post, comment, user**.
 
 ### @DB 
 
+You need to define @DB only once in your launching Activity.
+
 ```
 @DB(name = "blog_db",
         tables = {Post.class,Comment.class,User.class
@@ -232,12 +234,53 @@ In example code above, there are changes made to getter functions of related ent
 See [wiki on Mappings](https://github.com/basilgregory/ONAM4Android/wiki/Entity-Mappings) to know how to implement the same.
 
 
-
-Generating getter and setter function for transient fields are optional.
-
 Custom table name and column names may be specified for table creation using @Column(name = "<column-name>") and @Table(name = "<table-name>") annotations.
 See [migration docs](https://github.com/basilgregory/ONAM4Android/wiki/Migration) on how to implement the same.
 
+
+## Query rows
+
+### Find by ID
+In-order to find a row by its id,
+```
+   User user = User.find(User.class, 1);
+```
+This will return null, if the row doesn't exist.
+
+### Check if a row exists/ Retrieve a single row.
+```
+   User user = User.findByUniqueProperty(User.class, "name", "John Doe");
+```
+This will return a single row if it exists with value "John Doe" in column "name".
+Custom column names may be specified for tables using @Column(name = "<column-name>") annotation.
+See [migration docs](https://github.com/basilgregory/ONAM4Android/wiki/Migration) on how to implement the same.
+
+### Find by property
+
+To find all rows with value "John Doe" in column "name".
+```
+   List<User> users = User.findByProperty(User.class, "name", "John Doe");
+```
+
+## Find All
+
+To get all rows.
+```
+   List<User> users = User.findAll(User.class);
+```
+
+## WHERE Clause
+Incase, you need to specify a custom where clause.
+
+Use where clause, use:
+```
+   String nameOfUser = "John Doe";
+   String whereClause = "name == " + nameOfUser;
+   List<User> users = User.findByProperty(User.class, whereClause);
+```
+
+
+See [query docs](https://github.com/basilgregory/ONAM4Android/wiki/Query-from-table) to find how to add limit, orderby clauses.
 
 ## Lifecycle Events
 
