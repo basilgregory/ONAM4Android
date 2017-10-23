@@ -542,7 +542,7 @@ class DBExecutor extends SQLiteOpenHelper {
                 curatedTablesList.add(table);
             }
             //Creation of fresh tables directly from entities.
-            executeNewTableCreation(DDLBuilder.createTables(curatedTablesList));
+            executeNewTableCreation(DDLBuilder.createTables(curatedTablesList), false);
 
 
             //Getting the list of curated mapping tables.
@@ -561,12 +561,12 @@ class DBExecutor extends SQLiteOpenHelper {
                     if (manyToMany != null && manyToMany.targetEntity() != Object.class &&
                             targetEntity == null) targetEntity = manyToMany.targetEntity();
 
-                    String ddl = DDLBuilder.createMappingTables(mappingTableName,table,targetEntity);
-                    mappingTableCreateDDL.put(mappingTableName,ddl);
+                    mappingTableCreateDDL.put(mappingTableName,
+                            DDLBuilder.createMappingTables(mappingTableName,table,targetEntity));
                 }
             }
             //Creation of mapping tables from #{ManyToMany} annotation getters.
-            executeNewTableCreation(mappingTableCreateDDL);
+            executeNewTableCreation(mappingTableCreateDDL, true);
 
             //Droping entities that are no more found in #{DB} annotation.
             executeTableDrop(DMLBuilder.curateAndDropTables
@@ -631,8 +631,14 @@ class DBExecutor extends SQLiteOpenHelper {
 
     }
 
-
-    private void executeNewTableCreation(HashMap<String,String> ddls){
+    /**
+     * Function that takes ddls and executes them in order they are received.
+     * If ddls contain mapping tables then the entire list should be for mapping tables
+     * and other ddls should be called separately.
+     * @param ddls -- the list of ddl commands
+     * @param mapping -- specifies whether the ddls are for mapping tabe or not
+     */
+    private void executeNewTableCreation(HashMap<String,String> ddls, boolean mapping){
         if (ddls == null || ddls.size() < 1) return;
         getWritableDatabase().beginTransaction();
         try {
@@ -641,6 +647,7 @@ class DBExecutor extends SQLiteOpenHelper {
                 try {
                     L.d("SQL : "+ddls.get(tableName));
                     getWritableDatabase().execSQL(ddls.get(tableName));
+                    if (mapping) dbMetaData.mappingTableNames.add(tableName);
                     dbMetaData.tableNames.add(tableName); //Here after execution it can be certain that the table creation was successful.
                 } catch (Exception e) {
                     L.e("SQL : table create ddl failed for "+ddls.get(tableName));
