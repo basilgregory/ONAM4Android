@@ -110,6 +110,24 @@ public class AllPostsActivity extends AppCompatActivity {
         dUser.save();
     }
 
+    /**
+     * Demo function to test the delete functionality of mapping tables.
+     */
+    private void removeTwoFollowers(){
+        Post post= Post.find(Post.class, 1);
+        if (post == null) return;
+        post.getFollowers();
+        if (post.getFollowers() == null) return;
+        User user = User.find(User.class,2);
+        if (user != null)
+            user.delete();
+        User secondUser = User.find(User.class,3);
+        if (secondUser != null)
+            secondUser.delete();
+        post.setRefresh(true);
+        post.getFollowers();
+        post.setRefresh(false);
+    }
 
     @Override
     protected void onResume() {
@@ -118,6 +136,8 @@ public class AllPostsActivity extends AppCompatActivity {
         fetchAllPosts();
         postsAdapter.setPosts(postList);
         postsAdapter.notifyDataSetChanged();
+
+        removeTwoFollowers();
     }
 
     private void connectViews(){
