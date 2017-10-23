@@ -33,41 +33,61 @@ Lets consider the below database requirements.
 Database Name: **blog_db**  
 Tables: **post, comment, user**.  
 
-You need to call init() function in your launcher Activity onCreate().
 
-If @DB annonation is defined in Activity Class file.
-```
-    Entity.init(this);
-```
-Incase @DB annonation is defined in separate Class file.
+### @DB 
 
-```
-    Entity.init(this, objectOfClass);
-```
-
-For information on how to activate logs [Activate Logs using log()](https://github.com/basilgregory/ONAM4Android/wiki/Logs)
-
-
-You need to specify the Entity classes using @DB annotation along with name and version of your database, in the same launcher Activity.
+You need to define @DB only once in your launching Activity.
 
 ```
 @DB(name = "blog_db",
         tables = {Post.class,Comment.class,User.class
 }, version = 1)
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    ...
+}
 ```
 
+### Entity.init()
 
-Types of mappings that are needed,
-Post has ManyToOne mapping with User (as owner of post)  
-Post has OneToMany mapping with Comment (as comments of post)  
-Post has ManyToMany mapping with User (as followers of post)  
+You need to call init() function in same class where @DB annotation is defined.
 
-Comment has ManyToOne mapping with Post (as comments of post)  
-Comment has ManyToOne mapping with User (as owner of comment)  
+If @DB annonation is defined in Activity Class file.
+```
+@DB(name = "blog_db",
+        tables = {Post.class,Comment.class,User.class
+}, version = 1)
+public class MainActivity extends AppCompatActivity {
 
-User has OneToMany mapping with Post (as owner of post)  
-User has OneToMany mapping with Comments (as owner of comment)  
-User has ManyToMany mapping with Post (as followed posts)  
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Entity.init(this);
+    }
+    ...
+}
+```
+Incase @DB annonation is defined in separate Class file.
+
+```
+@DB(name = "blog_db",
+        tables = {Post.class,Comment.class,User.class
+}, version = 1)
+public class InitClass {
+
+    public InitClass(Activity activity) {
+        Entity.init(activity, this);
+    }
+    ...
+}
+```
+
+For information on how to activate logs [Activate Logs](https://github.com/basilgregory/ONAM4Android/wiki/Logs) using log()
+
+## Tables
 
 **ONAM** provides 2 kinds of interfaces to take care of you all your ORM requirements. One an abstract class named **Entity** and a series of annotations that you need to integrate in your code.
 
@@ -90,6 +110,10 @@ public class User extends Entity {
 }
 ```
 
+## Columns
+
+The primary key in ONAM for all tables are maintained internally (auto generated, incrementing), you will be able to access them using getId() method, but not overwrite or alter its value.
+
 Now add columns as class fields.
 
 ```
@@ -108,164 +132,160 @@ public class Post extends Entity {
 }
 ```
 
+## Transient fields
+
 All fields will be converted to database columns. All fields with transient modifier *( in this case* private transient String transientPost *)* will be ommited out. You may use such fields to do your bidding at freewill.
 
-Now generate getter and setters for all fields ( This is mandatory for all fields except transient fields, *your choice* ).
+Now generate getter and setters for all fields ( This is mandatory for all fields except transient fields).
+
+
+## Mappings
+
+### Types of mappings that are needed,
+Post has ManyToOne mapping with User (as owner of post)  
+Post has OneToMany mapping with Comment (as comments of post)  
+Post has ManyToMany mapping with User (as followers of post)  
+
+For more on entity mappings, see [wiki on Mappings](https://github.com/basilgregory/ONAM4Android/wiki/Entity-Mappings)
+
+
+## Getters and Setters
+
+You need to generate getters and setters of all fields that has to converted to columns.
 
 ```
-    .....
-    public List<User> getFollowers() {
-        return followers;
+    public String getTitle() {
+        return title;
     }
 
-    public void setFollowers(List<User> followers) {
-        this.followers = followers;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
+    public String getPost() {
+        return post;
+    }
+
+    public void setPost(String post) {
+        this.post = post;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @OneToMany(referencedColumnName = "post_id", targetEntity = Comment.class)
     public List<Comment> getComments() {
-        return comments;
+        return fetch(this.comments,new Comment(){});
     }
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
 
+    @ManyToOne
     public User getUser() {
-        return user;
+        return fetch(this.user,new User(){});
     }
 
     public void setUser(User user) {
         this.user = user;
     }
-```
 
-No changes are needed in setter functions. 
-For getter functions that returns entity/List<Enitity> (that has some mapping relation), like **User**, **Comment**, you need to replace the return statement. 
-
-In this case, for the following functions.
-```
-public List<User> getFollowers()
-public List<Comment> getComments() 
-public User getUser()
-```
-Their complementary getters are,
-In **Comment** Entity
-```
-public Post getPost() 
-```
-and in **User** Entity
-```
-public List<Post> getPosts() 
-public List<Post> getFollowedPosts()
-```
-
-Replace return statement in getter functions of entities with 
-
-```
-    replace,
-        return followers;
-    with,
-        return fetch(this.followers,new User(){});
-```
-Finally, getter functions for related entities would be,
-```
-    In Post Entity,
+    @ManyToMany(tableName = "post_followers", targetEntity = User.class)
     public List<User> getFollowers() {
         return fetch(this.followers,new User(){});
     }
-    In User Entity
-    public List<Post> getFollowedPosts() {
-        return fetch(this.followedPosts,new Post(){});
+
+    public void setFollowers(List<User> followers) {
+        this.followers = followers;
     }
 
-    In Post Entity,
-    public List<Comment> getComments() {
-        return fetch(this.comments,new Comment(){});
-    }
-    In Comment Entity,
-    public Post getPost() {
-        return fetch(this.post,new Post(){});
+    public String getTransientPost() {
+        return transientPost;
     }
 
-    In Post Entity,
+    public void setTransientPost(String transientPost) {
+        this.transientPost = transientPost;
+    }
+```
+
+In example code above, there are changes made to getter functions of related entities, these changes are mandatory for related entities.
+```
+    @ManyToOne
     public User getUser() {
         return fetch(this.user,new User(){});
     }
-    In User Entity,
-    public List<Post> getPosts() {
-        return fetch(this.posts,new Post(){});
-    }
 
-```
-Now, specify the mapping for each of the getter functions,
-
-Recall that Post has 3 types of mappings  
-Post has ManyToMany mapping with User (as followers of post)  
-Post has OneToMany mapping with Comment (as comments of post)  
-Post has ManyToOne mapping with User (as owner of post)  
-
-**Post** has OneToMany mapping with **Comment**  
-For OneToMany mapping a foreignkey for **Post** entity is needed in **Comment** table, you may suggest a foreign key column name.
-```
     @OneToMany(referencedColumnName = "post_id", targetEntity = Comment.class)
     public List<Comment> getComments() {
         return fetch(this.comments,new Comment(){});
     }
-```
-And In **Comments** entity, 
-Comment has ManyToOne mapping with Post (as comments of post)
-```
-    @ManyToOne
-    @Column(name = "post_id")
-    public Post getPost() {
-        return fetch(this.post,new Post(){});
-    }
-```
-Here a foreign key column named *post_id* will be created in **Comment** table.  
-If you are providing a column name for ManyToOne mapping, then correspondingly  
-the same name as to be provided for the OneToMany mapping in related entity as  
-referencedColumnName, here *post_id*.
-
-**Post** has ManyToOne mapping with **User**  
-For ManyToOne mapping a foreignkey for **User** entity is needed at **Post** table, you may suggest a foreign key column name.
-```
-    @ManyToOne
-    public User getUser() {
-        return fetch(this.user,new User(){});
-    }
-```
-Here a foreign key column named *user_id* will be created automatically, as no explicit name is provided in **Post** table.  
-Similarly, **User** entity has
-```
-    @OneToMany(targetEntity = Post.class)
-    public List<Post> getPosts() {
-        return fetch(this.posts,new Post(){});
-    }
-```
-In short, if you are providing a @Column name to @ManyToOne mapping then the same column name has to be provided in the corresponding @OneToMany mapping as referencedColumnName. 
-
-
-**Post** has ManyToMany mapping with **User** entity (as followers of post), we need a mapping table with name '*user_followers*' and the mapping to be done with **User** enitity 
-
-```
-    @ManyToMany(tableName = "post_followers", 
-            targetEntity = User.class)
+    
+    @ManyToMany(tableName = "post_followers", targetEntity = User.class)
     public List<User> getFollowers() {
         return fetch(this.followers,new User(){});
     }
 ```
-Correspondingly in **User** entity, the tableName should be same.
+See [wiki on Mappings](https://github.com/basilgregory/ONAM4Android/wiki/Entity-Mappings) to know how to implement the same.
+
+
+Custom table name and column names may be specified for table creation using @Column(name = "column_name") and @Table(name = "table_name") annotations.
+See [migration docs](https://github.com/basilgregory/ONAM4Android/wiki/Migration) on how to implement the same.
+
+
+## Query rows
+
+### Find by ID
+In-order to find a row by its id,
 ```
-    @ManyToMany(tableName = "post_followers", 
-            targetEntity = Post.class)
-    public List<Post> getFollowedPosts() {
-        return fetch(this.followedPosts,new Post(){});
-    }
+   User user = User.find(User.class, 1);
+```
+This will return null, if the row doesn't exist.
+
+### Check if a row exists/ Retrieve a single row.
+```
+   User user = User.findByUniqueProperty(User.class, "name", "John Doe");
+```
+This will return a single row if it exists with value "John Doe" in column "name".
+Custom column names may be specified for tables using @Column(name = "column_name") annotation.
+See [migration docs](https://github.com/basilgregory/ONAM4Android/wiki/Migration) on how to implement the same.
+
+### Find by property
+
+To find all rows with value "John Doe" in column "name".
+```
+   List<User> users = User.findByProperty(User.class, "name", "John Doe");
 ```
 
-**@ManyToMany** mapping should *mandatorily* have tableName and enitity class to be mapped with.
+## Find All
+
+To get all rows.
+```
+   List<User> users = User.findAll(User.class);
+```
+
+## WHERE Clause
+Incase, you need to specify a custom where clause.
+
+Use where clause, use:
+```
+   String nameOfUser = "John Doe";
+   String whereClause = "name == " + nameOfUser;
+   List<User> users = User.findByProperty(User.class, whereClause);
+```
 
 
+See [query docs](https://github.com/basilgregory/ONAM4Android/wiki/Query-from-table) to find how to add limit, orderby clauses.
+
+## Lifecycle Events
+
+You can define methods that will be executed before create, before update, after create or after update using corresponding annotations.
+See [Lifecycle docs](https://github.com/basilgregory/ONAM4Android/wiki/Lifecycle) on how to implement the same.
 
 ## JSON parser
 
@@ -278,7 +298,7 @@ were 'post' is object of **Post** Entity, and this will return a JSONObject with
 For detailed information on how to specify the fields to be marked for JSON convertion [JSONParser Docs](https://github.com/basilgregory/ONAM4Android/wiki/JSON-Parser)
 
 
-## Contributing
+### Contributing
 
 Please read [CONTRIBUTING.md](https://github.com/basilgregory/ONAM4Android/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
@@ -286,12 +306,16 @@ Please read [CONTRIBUTING.md](https://github.com/basilgregory/ONAM4Android/blob/
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/basilgregory/ONAM4Android/tags). 
 
-## Authors
+### Authors
 
-* **Robin Alex Panicker** - [BasilGregory Software Labs Pvt Ltd](https://github.com/rp-bg)
+* **Robin Alex Panicker** - [BasilGregory Software Labs Pvt Ltd](https://github.com/rp-bg) 
 * **Don Peter** - [BasilGregory Software Labs Pvt Ltd](https://github.com/dp-bg)
 
-## License
+### Contact
+
+email: onam@basilgregory.com
+
+### License
 
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/basilgregory/ONAM4Android/blob/master/LICENSE) file for details
 
