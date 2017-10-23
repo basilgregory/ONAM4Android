@@ -8,6 +8,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 
 import com.basilgregory.onam.android.Entity;
 import com.basilgregory.onam.annotations.DB;
@@ -40,6 +41,7 @@ public class AllPostsActivity extends AppCompatActivity {
     RecyclerView posts;
     FloatingActionButton addPlan;
     List<Post> postList;
+    Button removePosts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +126,10 @@ public class AllPostsActivity extends AppCompatActivity {
         postsAdapter = new PostsAdapter(postList);
         addPlan = (FloatingActionButton) findViewById(R.id.addPlan);
         addPlan.setOnClickListener(addNewPlan);
+
+        removePosts = (Button) findViewById(R.id.removePosts);
+        removePosts.setOnClickListener(removeAllPosts);
+
         posts = (RecyclerView) findViewById(R.id.posts);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         posts.setLayoutManager(mLayoutManager);
@@ -147,6 +153,12 @@ public class AllPostsActivity extends AppCompatActivity {
 
     }
 
+    View.OnClickListener removeAllPosts = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Post.truncate(Post.class);
+        }
+    };
 
     View.OnClickListener addNewPlan = new View.OnClickListener() {
         @Override

@@ -643,7 +643,8 @@ class DBExecutor extends SQLiteOpenHelper {
                     getWritableDatabase().execSQL(ddls.get(tableName));
                     dbMetaData.tableNames.add(tableName); //Here after execution it can be certain that the table creation was successful.
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    L.e("SQL : table create ddl failed for "+ddls.get(tableName));
+                    L.e(e);
                 }
             }
             getWritableDatabase().setTransactionSuccessful();
@@ -654,6 +655,29 @@ class DBExecutor extends SQLiteOpenHelper {
         }finally {
             getWritableDatabase().endTransaction();
         }
+    }
+
+    boolean truncate(Class<Entity> entity){
+        if (entity == null) {
+            L.w("SQL : Entity passed is null -- truncate failed");
+            return false;
+        }
+        String tableName = DbUtil.getTableName(entity);
+        try {
+            L.v("SQL : Truncating table "+tableName);
+            getWritableDatabase().beginTransaction();
+            getWritableDatabase().execSQL("DELETE FROM "+ tableName);
+            getWritableDatabase().setTransactionSuccessful();
+            L.v("SQL : Truncating table "+tableName+" complete");
+            return true;
+        } catch (Exception e) {
+            L.e("SQL : table truncate ddl failed for "+tableName);
+            L.e(e);
+            return false;
+        }finally {
+            getWritableDatabase().endTransaction();
+        }
+
     }
 
     //endregion

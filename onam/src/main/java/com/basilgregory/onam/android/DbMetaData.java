@@ -9,6 +9,7 @@ import java.util.List;
  */
 
 class DbMetaData implements Serializable{
+    static final long serialVersionUID = 42L;
     int version = 0;
     List<String> tableNames = new ArrayList<>();
 }

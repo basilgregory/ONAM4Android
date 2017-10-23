@@ -32,7 +32,7 @@ class DbUtil {
         return ((OneToMany) annotation).referencedColumnName();
     }
 
-    static String getTableName(Class<Entity> cls){
+    public static String getTableName(Class<Entity> cls){
         return (cls.getAnnotation(Table.class) == null || cls.getAnnotation(Table.class).name().isEmpty()) ?
                 cls.getSimpleName().toLowerCase() :
                 cls.getAnnotation(Table.class).name();

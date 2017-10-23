@@ -163,6 +163,10 @@ public abstract class Entity implements Serializable{
         return DBExecutor.getInstance().delete(this) == 1;
     }
 
+    public static boolean truncate(Class entityClass){
+        return DBExecutor.getInstance().truncate(entityClass);
+    }
+
     /**
      *
      * @param entityClass - This will be your Entity class.
