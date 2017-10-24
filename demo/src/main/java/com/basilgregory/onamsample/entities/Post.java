@@ -1,6 +1,7 @@
 package com.basilgregory.onamsample.entities;
 
 import com.basilgregory.onam.android.Entity;
+import com.basilgregory.onam.annotations.Column;
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.ManyToOne;
 import com.basilgregory.onam.annotations.OneToMany;
@@ -27,6 +28,7 @@ public class Post extends Entity {
     private List<Comment> comments;
     private User user;
 
+    @Column(unique = true)
     public String getTitle() {
         return title;
     }
