@@ -22,7 +22,7 @@ repositories {
 And
 ```
 dependencies {
-    compile 'com.github.basilgregory:ONAM4Android:2.0'
+    compile 'com.github.basilgregory:ONAM4Android:2.1'
 }
 ```
 
@@ -112,6 +112,7 @@ public class User extends Entity {
 
 ## Columns
 
+## Primary Key
 The primary key in ONAM for all tables are maintained internally (auto generated, incrementing), you will be able to access them using getId() method, but not overwrite or alter its value.
 
 Now add columns as class fields.
@@ -131,6 +132,9 @@ public class Post extends Entity {
     .....
 }
 ```
+
+## Unique fields
+You may set a field to be unique using @Column(unique= true) in its corresponding getter function, and if you try to insert or update a duplicate value, 'android.database.sqlite.SQLiteConstraintException: UNIQUE constraint failed' exception will be thrown. Even NULL value is allowed only once if unique= true is set.
 
 ## Transient fields
 
@@ -236,6 +240,41 @@ See [wiki on Mappings](https://github.com/basilgregory/ONAM4Android/wiki/Entity-
 
 Custom table name and column names may be specified for table creation using @Column(name = "column_name") and @Table(name = "table_name") annotations.
 See [migration docs](https://github.com/basilgregory/ONAM4Android/wiki/Migration) on how to implement the same.
+
+## Save/ Update
+You may save an entity by calling save() method. The decision to insert or update will be taken care of by ONAM. If you want to update an entity, be sure to fetch it first using any of the Query methods.
+
+### Save
+```
+    Post post = new Post();
+    post.setTitle(postTitle.getText().toString());
+    post.setPost(postDescription.getText().toString());
+    User registeredUser = User.find(User.class,1);
+    post.setUser(registeredUser);
+    post.save(); //Here insertion operation will be carried out
+```
+### Update
+```
+   User user = User.findByUniqueProperty(User.class, "name", "John Doe");
+   user.setBio("Updated Bio");
+   user.save(); //Here update operation will be carried out
+```
+
+## Delete
+
+Calling delete() method will delete that particular row. It will return true/ false depending on the success of the operation
+```
+    
+    User user = User.findByUniqueProperty(User.class, "name", "John Doe");
+    if (user == null) return; //to make sure that user exists
+    boolean deleteSuccess = user.delete();
+```
+
+## Truncate
+Entity.truncate()  will delete all rows in a particular table. It will return true/ false depending on the success of the operation
+```
+    boolean truncateSuccess = Post.truncate(Post.class);
+```
 
 
 ## Query rows
