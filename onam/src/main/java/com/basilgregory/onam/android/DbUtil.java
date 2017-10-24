@@ -90,6 +90,12 @@ class DbUtil {
 
     }
 
+    static boolean isUniqueColumn(Method method){
+        if (method == null) return false;
+        if (method.getAnnotation(Column.class) != null)  return method.getAnnotation(Column.class).unique();
+        return false;
+    }
+
     static boolean isGetter(Method method){
         if (method == null) return false;
         return method.getName().toLowerCase().startsWith("get");

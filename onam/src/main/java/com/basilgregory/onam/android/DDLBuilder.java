@@ -49,9 +49,12 @@ class DDLBuilder {
         for (Field field:fields) {
             if (Modifier.isTransient(field.getModifiers())) continue; //Transient field are to be omitted from creation.
             String fieldType = DbUtil.findType(field);
-            String columnName = DbUtil.getColumnName(field);
-            if (fieldType != null && columnName != null) ddlCreate.append(columnName.toLowerCase()).append(" ").append(fieldType);
-            else {
+            Method getter = DbUtil.getMethod("get", field);
+            String columnName = DbUtil.getColumnName(getter);
+            if (fieldType != null && columnName != null){
+                ddlCreate.append(columnName.toLowerCase()).append(" ").append(fieldType);
+                if (DbUtil.isUniqueColumn(getter)) ddlCreate.append(" UNIQUE");
+            }else {
                 Method getterMethod = DbUtil.getMethod("get",field);
                 if (getterMethod != null && getterMethod.getAnnotation(OneToMany.class) == null &&
                         getterMethod.getAnnotation(ManyToMany.class) == null) DbUtil.generateForeignColumnName(ddlCreate,field);
