@@ -53,7 +53,7 @@ class JSONParser {
         return jsonObject;
     }
 
-    static JSONArray toJsonArray(List<Entity> objects){
+    static JSONArray toJsonArray(List<? extends Entity> objects){
         return toJsonArrayGeneric(objects);
     }
 

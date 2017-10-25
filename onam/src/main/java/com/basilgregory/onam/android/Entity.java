@@ -274,7 +274,7 @@ public abstract class Entity implements Serializable{
         return JSONParser.toJsonObject(object);
     }
 
-    public static JSONArray toJSONArray(List<Entity> objects){
+    public static JSONArray toJSONArray(List<? extends Entity> objects){
         return JSONParser.toJsonArray(objects);
     }
 
