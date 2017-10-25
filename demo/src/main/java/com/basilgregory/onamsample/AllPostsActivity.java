@@ -22,6 +22,7 @@ import com.basilgregory.onamsample.listeners.RecyclerTouchListener;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -60,7 +61,7 @@ public class AllPostsActivity extends AppCompatActivity {
     }
 
     /**
-     * Sample function to display the convertion of JSON to Entity
+     * Sample function to display the convertion of JSON to Entity and vice versa
      * @throws Exception
      */
     private void convertJSONToEntity() throws Exception{
@@ -68,13 +69,18 @@ public class AllPostsActivity extends AppCompatActivity {
         post.put("title","some title");
         JSONArray comments = new JSONArray();
         JSONObject comment = new JSONObject();
-        comment.put("comment","commnet 1");
+        comment.put("comment","comment 1");
         JSONObject comment2 = new JSONObject();
-        comment2.put("comment","commnet 2");
+        comment2.put("comment","comment 2");
         comments.put(comment);
         comments.put(comment2);
         post.put("comments",comments);
         Post post1 = (Post) Entity.fromJSON(post,Post.class);
+
+
+        JSONObject postObject = Entity.toJSON(post1);
+        List<Post> posts = Arrays.asList(post1,post1);
+        JSONArray postsArray = Entity.toJSONArray(posts);
     }
 
     /**
