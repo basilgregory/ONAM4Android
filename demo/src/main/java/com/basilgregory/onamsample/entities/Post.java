@@ -2,6 +2,7 @@ package com.basilgregory.onamsample.entities;
 
 import com.basilgregory.onam.android.Entity;
 import com.basilgregory.onam.annotations.Column;
+import com.basilgregory.onam.annotations.Json;
 import com.basilgregory.onam.annotations.ManyToMany;
 import com.basilgregory.onam.annotations.ManyToOne;
 import com.basilgregory.onam.annotations.OneToMany;
@@ -29,6 +30,7 @@ public class Post extends Entity {
     private User user;
 
     @Column(unique = true)
+    @Json(fieldName = "title")
     public String getTitle() {
         return title;
     }
@@ -37,6 +39,7 @@ public class Post extends Entity {
         this.title = title;
     }
 
+    @Json(fieldName = "post")
     public String getPost() {
         return post;
     }
@@ -45,6 +48,7 @@ public class Post extends Entity {
         this.post = post;
     }
 
+    @Json(fieldName = "created_at")
     public long getCreatedAt() {
         return createdAt;
     }
