@@ -221,6 +221,13 @@ public abstract class Entity implements Serializable{
         return (List<E>)DBExecutor.getInstance().findByProperty(entityClass,columnName,value,null,limit);
     }
 
+    public static <E extends Entity> List<E> findByProperty(Class entityClass,String columnName,Object value,String orderByColumn, boolean descending, Integer startIndex,Integer pageSize){
+        return (List<E>)DBExecutor.getInstance().findByProperty(entityClass,columnName,value,orderByColumn,descending,startIndex,pageSize);
+    }
+    public static <E extends Entity> List<E> findByProperty(Class entityClass,String columnName,Object value,String orderByColumn, boolean descending,Integer limit){
+        return (List<E>)DBExecutor.getInstance().findByProperty(entityClass,columnName,value,orderByColumn,descending,null,limit);
+    }
+
     public static <E extends Entity> List<E> findAll(Class entityClass, Integer startIndex,Integer pageSize){
         return (List<E>) DBExecutor.getInstance().findAll(entityClass,null,startIndex,pageSize);
     }

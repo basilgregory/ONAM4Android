@@ -48,6 +48,13 @@ class QueryBuilder {
         return findByProperty(DbUtil.getTableName(cls),columnName,value,startIndex,pageSize);
     }
 
+    static String findByProperty(Class<Entity> cls,String columnName,Object value,String orderByColumn, boolean descending, Integer startIndex,Integer pageSize){
+        value = FieldType.isStringType(value) ? "'"+value+"'" : value;
+        StringBuffer orderByCondition = new StringBuffer(orderByColumn)
+                .append(" ").append(descending ? "DESC" : "ASC");
+        return selectQuery(DbUtil.getTableName(cls),columnName+" = "+value,null,orderByCondition.toString(),startIndex,pageSize);
+    }
+
     static String findByROWId(Class<Entity> cls,long rowID){
         String rawQuery =  "SELECT * FROM :table WHERE ROWID = :id Limit 1";
         return rawQuery

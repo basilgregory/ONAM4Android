@@ -134,6 +134,12 @@ class DBExecutor extends SQLiteOpenHelper {
                 ,cls);
     }
 
+    List<Entity> findByProperty(Class<Entity> cls,String columnName,Object value,String orderByColumn, boolean descending, Integer startIndex,Integer pageSize){
+        return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
+                        (QueryBuilder.findByProperty(cls, columnName, value, orderByColumn, descending, startIndex, pageSize), null)
+                ,cls);
+    }
+
     List<Entity> findAll(Class<Entity> cls,String whereClause, Integer startIndex, Integer pageSize) {
         return convertToEntityAndFetchFirstDegreeRelatedEntity(getReadableDatabase().rawQuery
                         (QueryBuilder.findAll(cls, whereClause, startIndex, pageSize), null)
