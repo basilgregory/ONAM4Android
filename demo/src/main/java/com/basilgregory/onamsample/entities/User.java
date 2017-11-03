@@ -45,7 +45,7 @@ public class User extends Entity {
         this.posts = posts;
     }
 
-    @OneToMany(referencedColumnName = "creator_id", targetEntity = Comment.class)
+    @OneToMany(targetEntity = Comment.class)
     public List<Comment> getComments() {
         return fetch(this.comments,new Comment(){});
     }

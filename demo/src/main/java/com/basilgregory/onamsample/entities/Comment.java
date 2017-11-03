@@ -65,7 +65,8 @@ public class Comment extends Entity {
     }
 
     /**
-     * You may create any number of #{{@link AfterCreate}} functions and will be executed before actual insertion to the database
+     * You may create any number of #{{@link AfterCreate}} functions and will be executed before actual insertion to the
+     * database
      * The order of execution of #{{@link AfterCreate}} functions (incase of more than one) will be random.
      */
     @AfterCreate
