@@ -29,7 +29,6 @@ import java.util.List;
  *
  */
 public abstract class Entity implements Serializable{
-    static final long serialVersionUID = 41L;
 
     public Entity() {
     }

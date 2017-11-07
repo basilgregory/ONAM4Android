@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.basilgregory.onam.android.DbUtil.getColumnName;
 import static com.basilgregory.onam.android.DbUtil.getMappingForeignColumnNameClass;
@@ -35,12 +36,13 @@ class DBExecutor extends SQLiteOpenHelper {
     Storage storage;
     String dbName;
     private static DBExecutor instance = null;
-
+    private static Map<String,DBExecutor> instances = new HashMap<String,DBExecutor>();
     public static DBExecutor getInstance(Context context, String dbName, int version) {
-
+        if (instances.containsKey(dbName)) instance = instances.get(dbName);
         instance = instance == null ?
                 new DBExecutor(context, dbName,
                         version) : instance;
+        instances.put(dbName,instance);
         return instance;
     }
 
