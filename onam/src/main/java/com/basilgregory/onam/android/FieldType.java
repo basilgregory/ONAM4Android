@@ -25,7 +25,8 @@ enum FieldType {
     DATE("text"),
     TIME("text"),
     DATETIME("text"),
-    BYTE_S("BLOB");
+    BYTE_S("BLOB"),
+    OBJECT("text");
 
 
     private String dataType;
