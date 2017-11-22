@@ -61,7 +61,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.postTitle.setText(posts.get(position).getTitle());
-        holder.postDescription.setText(posts.get(position).getPost());
+        holder.postDescription.setText((String)posts.get(position).getPost());
         if (posts.get(position).getUser() == null) return;
         holder.postOwnerName.setText(posts.get(position).getUser().getName());
 

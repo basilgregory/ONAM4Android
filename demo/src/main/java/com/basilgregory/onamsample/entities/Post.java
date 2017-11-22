@@ -16,7 +16,7 @@ import java.util.List;
 @Table
 public class Post extends Entity {
     private String title;
-    private String post;
+    private Object post;
 
     //If you need to include a property that is not be inserted/updated to database then you have to specify the modifier transient
     private transient String transientPost;
@@ -40,11 +40,11 @@ public class Post extends Entity {
     }
 
     @Json(fieldName = "post")
-    public String getPost() {
+    public Object getPost() {
         return post;
     }
 
-    public void setPost(String post) {
+    public void setPost(Object post) {
         this.post = post;
     }
 

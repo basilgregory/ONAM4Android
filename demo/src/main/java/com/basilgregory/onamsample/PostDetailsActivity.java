@@ -58,7 +58,7 @@ public class PostDetailsActivity extends AppCompatActivity {
     private void updateViews(){
         if (post == null) return;
         postTitle.setText(post.getTitle());
-        postDescription.setText(post.getPost());
+        postDescription.setText((String)post.getPost());
         if (post.getUser() == null) return;
         userName.setText(post.getUser().getName());
         userBio.setText(post.getUser().getBio());
