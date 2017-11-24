@@ -14,7 +14,7 @@ class L {
         warning = true;
         error = true;
         verbose = false;
-        verboseInternal = false;
+        verboseInternal = true;
         debug = false;
     }
 
@@ -38,11 +38,11 @@ class L {
 
     static void vi(String message){
         if (!verboseInternal || message == null || message.isEmpty()) return;
-        Log.d("ONAM/internal",""+message);
+        Log.v("ONAM/internal",""+message);
     }
     static void v(String message){
         if (!verbose || message == null || message.isEmpty()) return;
-        Log.d("ONAM/verbose",""+message);
+        Log.v("ONAM/verbose",""+message);
     }
     static void d(String message){
         if (!debug || message == null || message.isEmpty()) return;
@@ -50,11 +50,11 @@ class L {
     }
     static void w(String message){
         if (!warning || message == null || message.isEmpty()) return;
-        Log.d("ONAM/warning",""+message);
+        Log.w("ONAM/warning",""+message);
     }
     static void e(String message){
         if (!error || message == null || message.isEmpty()) return;
-        Log.d("ONAM/error",""+message);
+        Log.e("ONAM/error",""+message);
     }
     static void e(Exception e){
         if (!error || e == null) return;
